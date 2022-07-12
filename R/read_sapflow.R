@@ -21,3 +21,26 @@ read_sapflow_file <- function(filename) {
     x$Logger <- logger_name
     x
 }
+
+#' Download and read a data file from Dropbox
+#'
+#' @param filename A Dropbox filename, e.g. returned by \code{drop_dir}
+#' @param token A dropbox token
+#' @param read_function A function to read the downloaded file with
+#' @return A \code{\link[tibble]{tibble}} with the data.
+#' @export
+#' @author Ben Bond-Lamberty
+read_file_dropbox <- function(filename, token, read_function) {
+    # We don't want users to need rdrop2 to use this package (i.e. we don't
+    # want to put it in DESCRIPTION's Imports:), so check for availability
+    if (requireNamespace("rdrop2", quietly = TRUE)) {
+        # download to temp file
+        tf <- tempfile()
+        rdrop2::drop_download(filename, local_path = tf,
+                              dtoken = token, overwrite = TRUE)
+        read_function(tf)
+    } else {
+        stop("rdrop2 package is not available")
+    }
+}
+
