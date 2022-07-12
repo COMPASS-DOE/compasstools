@@ -33,7 +33,7 @@ read_sapflow_file <- function(filename) {
 read_file_dropbox <- function(filename, token, read_function) {
     # We don't want users to need rdrop2 to use this package (i.e. we don't
     # want to put it in DESCRIPTION's Imports:), so check for availability
-    if (requireNamespace("rdrop2", quietly = TRUE)) {
+    if(requireNamespace("rdrop2", quietly = TRUE)) {
         # download to temp file
         tf <- tempfile()
         rdrop2::drop_download(filename, local_path = tf,
@@ -44,3 +44,41 @@ read_file_dropbox <- function(filename, token, read_function) {
     }
 }
 
+
+#' Read a directory of sapflow files, either from Dropbox or locally
+#'
+#' @param datadir Directory, either in Dropbox or local
+#' @param dropbox_token Optional Dropbox token
+#' @param progress_bar Optional progress bar to call while reading
+#' @return All sapflow files in directory, read and concatenated.
+#' @importFrom dplyr bind_rows
+#' @seealso read_sapflow_file
+#' @export
+#' @author Ben Bond-Lamberty
+read_sapflow_dir <- function(datadir, dropbox_token = NULL, progress_bar = NULL) {
+
+    local <- is.null(dropbox_token)
+    if(local) {
+        s_files <- list.files(datadir, pattern = "sapflow\\.dat$", full.names = TRUE)
+    } else {
+        if(requireNamespace("rdrop2", quietly = TRUE)) {
+            # Generate list of 'current' sapflow files
+            s_dir <- rdrop2::drop_dir(datadir, dtoken = dropbox_token)
+            s_files <- grep(s_dir$path_display, pattern = "sapflow\\.dat$", value = TRUE)
+        } else {
+            stop("rdrop2 package is not available")
+        }
+    }
+
+    f <- function(filename, token, total_files) {
+        if(!is.null(progress_bar)) progress_bar(1 / total_files)
+        # Read file, either locally or from Dropbox
+        if(local) {
+            read_sapflow_file(filename)
+        } else {
+            read_file_dropbox(filename, dropbox_token, read_sapflow_file)
+        }
+    }
+    x <- lapply(s_files, f, dropbox_token, length(s_files))
+    bind_rows(x)
+}
