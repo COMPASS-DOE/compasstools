@@ -16,6 +16,9 @@ A \code{\link[tibble]{tibble}} with the data.
 \description{
 Read a raw sapflow data file
 }
+\seealso{
+\code{\link{process_sapflow_dir}}
+}
 \author{
 Stephanie Pennington
 }

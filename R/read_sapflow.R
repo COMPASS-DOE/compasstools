@@ -7,6 +7,7 @@
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
 #' @importFrom readr read_csv
+#' @seealso \code{\link{process_sapflow_dir}}
 read_sapflow_file <- function(filename) {
 
     sdat <- readLines(filename)
@@ -48,14 +49,20 @@ read_file_dropbox <- function(filename, token, read_function) {
 #' Read a directory of sapflow files, either from Dropbox or locally
 #'
 #' @param datadir Directory, either in Dropbox or local
+#' @param tz Time zone the data are set to
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
-#' @return All sapflow files in directory, read and concatenated.
-#' @importFrom dplyr bind_rows
-#' @seealso read_sapflow_file
+#' @return All sapflow files in directory, read and concatenated, with some
+#' basic processing done: duplicate rows dropped, time zone set, and reshaped
+#' to 'long' form.
+#' @import dplyr
+#' @importFrom tidyr pivot_longer
+#' @importFrom lubridate ymd_hms
+#' @importFrom readr parse_number
+#' @seealso \code{\link{read_sapflow_file}}
 #' @export
 #' @author Ben Bond-Lamberty
-read_sapflow_dir <- function(datadir, dropbox_token = NULL, progress_bar = NULL) {
+process_sapflow_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = NULL) {
 
     local <- is.null(dropbox_token)
     if(local) {
@@ -80,5 +87,25 @@ read_sapflow_dir <- function(datadir, dropbox_token = NULL, progress_bar = NULL)
         }
     }
     x <- lapply(s_files, f, dropbox_token, length(s_files))
-    bind_rows(x)
+    x <- bind_rows(x)
+
+    if(!nrow(x)) return(x)
+
+    # Set to NULL so that R CMD CHECK doesn't generate notes
+    TIMESTAMP <- RECORD <- Timestamp <- Port <- Logger <- NULL
+
+    # Do some basic processing:
+    # concatenate, set time zone, reshape, clean up some fields
+    x %>%
+        bind_rows() %>%
+        distinct() %>%
+        pivot_longer(cols = starts_with("DiffVolt_Avg"),
+                     names_to = "Port", values_to = "Value") %>%
+        rename(Timestamp = TIMESTAMP,
+               Record = RECORD) %>%
+        mutate(Timestamp = ymd_hms(Timestamp, tz = tz),
+               # extract number from former col name;
+               # for example, "DiffVolt_Avg(1)" becomes "1"
+               Port = parse_number(Port),
+               Logger = parse_number(Logger))
 }
