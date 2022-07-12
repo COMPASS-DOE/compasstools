@@ -14,7 +14,6 @@
 #' @return A tibble with the data
 #' @export
 #' @importFrom readr read_csv
-#' @examples
 read_sapflow_file <- function(filename) {
 
     sdat <- readLines(filename)
