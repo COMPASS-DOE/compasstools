@@ -1,17 +1,10 @@
-# Function to read logger network sapflow data
-# TEMPEST
-# Stephanie Pennington | Created July 2021
-
-# `filename` is a character path to a raw sapflow dataset from a Campbell data logger
-# returns a dataframe
-
-
 
 #' Read a raw sapflow data file
 #'
-#' @param filename Fully-qualified filename, character
-#'
-#' @return A tibble with the data
+#' @param filename Fully-qualified filename, character, of a raw sapflow dataset
+#' from a Campbell datalogger
+#' @author Stephanie Pennington
+#' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
 #' @importFrom readr read_csv
 read_sapflow_file <- function(filename) {

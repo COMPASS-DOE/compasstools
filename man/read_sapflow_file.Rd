@@ -7,11 +7,15 @@
 read_sapflow_file(filename)
 }
 \arguments{
-\item{filename}{Fully-qualified filename, character}
+\item{filename}{Fully-qualified filename, character, of a raw sapflow dataset
+from a Campbell datalogger}
 }
 \value{
-A tibble with the data
+A \code{\link[tibble]{tibble}} with the data.
 }
 \description{
 Read a raw sapflow data file
+}
+\author{
+Stephanie Pennington
 }
