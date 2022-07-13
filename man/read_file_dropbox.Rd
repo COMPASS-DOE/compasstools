@@ -17,7 +17,8 @@ read_file_dropbox(filename, token, read_function)
 A \code{\link[tibble]{tibble}} with the data.
 }
 \description{
-Download and read a data file from Dropbox
+This function downloads and reads (via a caller-supplied
+function) a file on Dropbox.
 }
 \author{
 Ben Bond-Lamberty
