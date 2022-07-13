@@ -4,6 +4,8 @@
 #' @param filename A Dropbox filename, e.g. returned by \code{drop_dir}
 #' @param token A dropbox token
 #' @param read_function A function to read the downloaded file with
+#' @description This function downloads and reads (via a caller-supplied
+#' function) a file on Dropbox.
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
 #' @author Ben Bond-Lamberty
