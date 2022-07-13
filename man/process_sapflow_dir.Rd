@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_sapflow.R
 \name{process_sapflow_dir}
 \alias{process_sapflow_dir}
-\title{Read a directory of sapflow files, either from Dropbox or locally}
+\title{Read and process a directory of sapflow files}
 \usage{
 process_sapflow_dir(datadir, tz, dropbox_token = NULL, progress_bar = NULL)
 }
@@ -21,7 +21,8 @@ basic processing done: duplicate rows dropped, time zone set, and reshaped
 to 'long' form.
 }
 \description{
-Read a directory of sapflow files, either from Dropbox or locally
+Read a directory of sapflow files, either from Dropbox or
+locally.
 }
 \seealso{
 \code{\link{read_sapflow_file}}

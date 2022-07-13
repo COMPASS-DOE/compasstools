@@ -23,35 +23,15 @@ read_sapflow_file <- function(filename) {
     x
 }
 
-#' Download and read a data file from Dropbox
-#'
-#' @param filename A Dropbox filename, e.g. returned by \code{drop_dir}
-#' @param token A dropbox token
-#' @param read_function A function to read the downloaded file with
-#' @return A \code{\link[tibble]{tibble}} with the data.
-#' @export
-#' @author Ben Bond-Lamberty
-read_file_dropbox <- function(filename, token, read_function) {
-    # We don't want users to need rdrop2 to use this package (i.e. we don't
-    # want to put it in DESCRIPTION's Imports:), so check for availability
-    if(requireNamespace("rdrop2", quietly = TRUE)) {
-        # download to temp file
-        tf <- tempfile()
-        rdrop2::drop_download(filename, local_path = tf,
-                              dtoken = token, overwrite = TRUE)
-        read_function(tf)
-    } else {
-        stop("rdrop2 package is not available")
-    }
-}
 
-
-#' Read a directory of sapflow files, either from Dropbox or locally
+#' Read and process a directory of sapflow files
 #'
 #' @param datadir Directory, either in Dropbox or local
 #' @param tz Time zone the data are set to
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
+#' @description Read a directory of sapflow files, either from Dropbox or
+#' locally.
 #' @return All sapflow files in directory, read and concatenated, with some
 #' basic processing done: duplicate rows dropped, time zone set, and reshaped
 #' to 'long' form.
@@ -64,30 +44,11 @@ read_file_dropbox <- function(filename, token, read_function) {
 #' @author Ben Bond-Lamberty
 process_sapflow_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = NULL) {
 
-    local <- is.null(dropbox_token)
-    if(local) {
-        s_files <- list.files(datadir, pattern = "sapflow\\.dat$", full.names = TRUE)
-    } else {
-        if(requireNamespace("rdrop2", quietly = TRUE)) {
-            # Generate list of 'current' sapflow files
-            s_dir <- rdrop2::drop_dir(datadir, dtoken = dropbox_token)
-            s_files <- grep(s_dir$path_display, pattern = "sapflow\\.dat$", value = TRUE)
-        } else {
-            stop("rdrop2 package is not available")
-        }
-    }
-
-    f <- function(filename, token, total_files) {
-        if(!is.null(progress_bar)) progress_bar(1 / total_files)
-        # Read file, either locally or from Dropbox
-        if(local) {
-            read_sapflow_file(filename)
-        } else {
-            read_file_dropbox(filename, dropbox_token, read_sapflow_file)
-        }
-    }
-    x <- lapply(s_files, f, dropbox_token, length(s_files))
-    x <- bind_rows(x)
+    x <- process_dir(datadir,
+                     pattern = "sapflow\\.dat$",
+                     read_function = read_sapflow_file,
+                     dropbox_token = dropbox_token,
+                     progress_bar = progress_bar)
 
     if(!nrow(x)) return(x)
 
