@@ -7,7 +7,7 @@
 read_sapflow_file(filename)
 }
 \arguments{
-\item{filename}{Fully-qualified filename, character, of a raw sapflow dataset
+\item{filename}{Fully-qualified filename of a raw sapflow dataset
 from a Campbell datalogger}
 }
 \value{

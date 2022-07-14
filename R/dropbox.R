@@ -26,16 +26,17 @@ read_file_dropbox <- function(filename, token, read_function) {
 
 #' Read a directory of files
 #'
-#' @param datadir Directory, either in Dropbox or local
+#' @param datadir A directory, either in Dropbox or local
 #' @param pattern Filename regex pattern
 #' @param read_function The file-read function to use
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
 #' @description A general-purpose function to read data files, either from
-#' Dropbox or locally. The function gets file based on a pattern,
-#' reads data from each file, binds them together, and returns. Callers
+#' Dropbox or locally. The function identifies files based on a pattern,
+#' reads data from each file, and binds them together Callers
 #' pass a `read_function` that handles the actual file read.
-#' @return All data files in directory, read and concatenated.
+#' @return All data files in directory, read and concatenated
+#' in a \code{\link[tibble]{tibble}}.
 #' @importFrom dplyr bind_rows
 #' @note This is not intended to be called directly by users; use
 #' \code{\link{process_sapflow_dir}}, etc., instead.
