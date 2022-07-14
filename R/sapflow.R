@@ -1,7 +1,7 @@
 
 #' Read a raw sapflow data file
 #'
-#' @param filename Fully-qualified filename, character, of a raw sapflow dataset
+#' @param filename Fully-qualified filename of a raw sapflow dataset
 #' from a Campbell datalogger
 #' @description This function reads a local file of raw sapflow data,
 #' extracts the logger number from the header, and uses

@@ -9,12 +9,13 @@ test_that("process_dir works", {
     }
     # Empty dir; neither progress bar nor read function should get called
     td <- tempdir()
-    process_dir(td, "",
-                read_function = rf,
-                dropbox_token = NULL,
-                progress_bar = pb)
+    out <- process_dir(td, "",
+                       read_function = rf,
+                       dropbox_token = NULL,
+                       progress_bar = pb)
     expect_identical(pb_count, 0)
     expect_identical(rf_count, 0)
+    expect_s3_class(out, "data.frame")
 
     # Write some files, both matching and non-matching,
     # into the tempdir...
@@ -26,11 +27,12 @@ test_that("process_dir works", {
 
     # ...and read
     out <- process_dir(td, "csv",
-                read_function = rf,
-                dropbox_token = NULL,
-                progress_bar = pb)
+                       read_function = rf,
+                       dropbox_token = NULL,
+                       progress_bar = pb)
     expect_identical(pb_count, n)
     expect_identical(rf_count, n)
+    expect_s3_class(out, "data.frame")
     expect_equal(nrow(out), n * nrow(cars))
     expect_identical(colnames(out), colnames(cars))
 })
