@@ -40,6 +40,8 @@ read_file_dropbox <- function(filename, token, read_function) {
 #' @importFrom dplyr bind_rows
 #' @note This is not intended to be called directly by users; use
 #' \code{\link{process_sapflow_dir}}, etc., instead.
+#' @note We use \code{\link[dplyr]{bind_rows}} for its much greater efficiency
+#' over \code{\link{rbind}}
 #' @author Ben Bond-Lamberty
 process_dir <- function(datadir, pattern, read_function,
                         dropbox_token = NULL, progress_bar = NULL) {
