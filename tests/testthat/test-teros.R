@@ -1,12 +1,13 @@
-test_that("read_sapflow_file works", {
-    x <- read_sapflow_file("test_data/PNNL_11_sapflow.dat")
+test_that("read_teros_file works", {
+    x <- read_teros_file("test_data/PNNL_11_Terosdata.dat")
+    y <- readLines("test_data/PNNL_11_Terosdata.dat")
     expect_s3_class(x, "data.frame")
-    expect_identical(nrow(x), 5L)
+    expect_equal(nrow(x), length(y) - 4) # 4 header lines in TEROS files
 })
 
-test_that("process_sapflow_dir works locally", {
+test_that("process_teros_dir works locally", {
     # Currently this only tests non-Dropbox reading
-    x <- process_sapflow_dir("test_data/", tz = "Europe/London")
+    x <- process_teros_dir("test_data/", tz = "Europe/London")
     expect_s3_class(x, "data.frame")
     expect_identical(length(unique(x$Logger)), 2L)  # there are 2 files
     expect_identical(lubridate::tz(x$Timestamp[1]), "Europe/London") # timezone set correctly
