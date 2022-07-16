@@ -9,11 +9,27 @@
 #' @author Stephanie Pennington
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
-#' @importFrom readr read_csv
+#' @importFrom readr read_csv read_lines
+#' @import fpeek
 #' @seealso \code{\link{process_sapflow_dir}}
-read_sapflow_file <- function(filename) {
+read_sapflow_file <- function(filename, min_timestamp = NULL) {
 
-    sdat <- readLines(filename)
+    if(!is.null(min_timestamp)) {
+        # peek into the file and calculate skip
+        firstdate <- capture.output(peek_head(filename, 5))
+        firstdate <- strsplit(tail(x, 1), ",")[[1]][1]
+        lastdate <- capture.output(fpeek::peek_tail(filename, n = 1))
+        lastdate <- strsplit(lastdate, ",")[[1]][1]
+
+        fd <- ymd_hms(firstdate)
+        ld <- ymd_hms(lastdate)
+        md <- ymd_hms(min_timestamp)
+        frac <- (md - fd) / (ld - md)
+        skip <- (fpeek::peek_count_lines(filename) - 4) * frac
+    } else {
+        skip <- 0
+    }
+    sdat <- read_lines(filename, skip = skip)
     sdat <- sdat[-3:-4] # remove lines 3 and 4 with unneeded information
 
     # parse line one to extract logger name
