@@ -21,7 +21,8 @@ read_sapflow_file <- function(filename) {
     logger_name <- substr(sdat[1], start = pnnl_x, stop = pnnl_x + 6)
 
     # The "I()" notation is how to read from a string; see help page
-    x <- read_csv(I(sdat), skip = 1, col_types = "Tddddddddddddddddd")
+    # Note we have no time zone information, so read the timestamp as character
+    x <- read_csv(I(sdat), skip = 1, col_types = "cddddddddddddddddd")
     x$Logger <- logger_name
     x
 }

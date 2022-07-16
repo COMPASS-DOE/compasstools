@@ -15,7 +15,8 @@ read_aquatroll600_file <- function(filename) {
     # that we want to remove. Read the data files into a string vector, remove
     # those lines, and then pass to read_csv()
     rawdata <- readLines(filename)[-c(1, 3, 4)]
-    read_csv(I(rawdata), na = "NAN", col_types = paste0("Tdcc", strrep("d", 19)))
+    # Note we have no time zone information, so read the timestamp as character
+    read_csv(I(rawdata), na = "NAN", col_types = paste0("cdcc", strrep("d", 19)))
 }
 
 
@@ -35,7 +36,8 @@ read_aquatroll200_file <- function(filename) {
     # that we want to remove. Read the data files into a string vector, remove
     # those lines, and then pass to read_csv()
     rawdata <- readLines(filename)[-c(1, 3, 4)]
-    read_csv(I(rawdata), na = "NAN", col_types = paste0("Tdccddddddddd"))
+    # Note we have no time zone information, so read the timestamp as character
+    read_csv(I(rawdata), na = "NAN", col_types = paste0("cdccddddddddd"))
 }
 
 

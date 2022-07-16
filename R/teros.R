@@ -15,7 +15,8 @@ read_teros_file <- function(filename) {
     # want to remove. Read the data files into a string vector, remove those
     # lines, and then pass to read_csv()
     rawdata <- readLines(filename)[-c(1, 3, 4)]
-    read_csv(I(rawdata), na = "NAN", col_types = paste0("Tdc", strrep("d", 66)))
+    # Note we have no time zone information, so read the timestamp as character
+    read_csv(I(rawdata), na = "NAN", col_types = paste0("cdc", strrep("d", 66)))
 }
 
 
