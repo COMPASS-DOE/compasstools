@@ -11,8 +11,9 @@
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_teros_dir}}
 read_teros_file <- function(filename) {
-    # Lines 1, 3, and 4 of the TEROS data files contain sensor metadata that we want to remove
-    # Read the data files into a string vector, remove those lines, and then pass to read_csv()
+    # Lines 1, 3, and 4 of the TEROS data files contain sensor metadata that we
+    # want to remove. Read the data files into a string vector, remove those
+    # lines, and then pass to read_csv()
     rawdata <- readLines(filename)[-c(1, 3, 4)]
     read_csv(I(rawdata), na = "NAN", col_types = paste0("Tdc", strrep("d", 66)))
 }
