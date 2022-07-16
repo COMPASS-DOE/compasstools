@@ -36,6 +36,9 @@ pass a \code{read_function} that handles the actual file read.
 \note{
 This is not intended to be called directly by users; use
 \code{\link{process_sapflow_dir}}, etc., instead.
+
+We use \code{\link[dplyr]{bind_rows}} for its much greater efficiency
+over \code{\link{rbind}}
 }
 \author{
 Ben Bond-Lamberty
