@@ -3,6 +3,8 @@
 #'
 #' @param filename Fully-qualified filename of a raw sapflow dataset
 #' from a Campbell datalogger
+#' @param min_timestamp Minimum timestamp to read, character;
+#' function will skip down in the data until approximately this time
 #' @description This function reads a local file of raw sapflow data,
 #' extracts the logger number from the header, and uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
@@ -10,35 +12,35 @@
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
 #' @importFrom readr read_csv read_lines
-#' @import fpeek
 #' @seealso \code{\link{process_sapflow_dir}}
 read_sapflow_file <- function(filename, min_timestamp = NULL) {
 
-    if(!is.null(min_timestamp)) {
-        # peek into the file and calculate skip
-        firstdate <- capture.output(peek_head(filename, 5))
-        firstdate <- strsplit(tail(x, 1), ",")[[1]][1]
-        lastdate <- capture.output(fpeek::peek_tail(filename, n = 1))
-        lastdate <- strsplit(lastdate, ",")[[1]][1]
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    if(skip == -1) return(tibble())
 
-        fd <- ymd_hms(firstdate)
-        ld <- ymd_hms(lastdate)
-        md <- ymd_hms(min_timestamp)
-        frac <- (md - fd) / (ld - md)
-        skip <- (fpeek::peek_count_lines(filename) - 4) * frac
-    } else {
-        skip <- 0
-    }
-    sdat <- read_lines(filename, skip = skip)
-    sdat <- sdat[-3:-4] # remove lines 3 and 4 with unneeded information
+    # Read line 1 - header info
+    dat_header <- read_lines(filename, n_max = 1)
+    # Parse line one to extract logger name
+    pnnl_x <- gregexpr("PNNL_", dat_header[1])[[1]][1]
+    logger_name <- substr(dat_header[1], start = pnnl_x, stop = pnnl_x + 6)
 
-    # parse line one to extract logger name
-    pnnl_x <- gregexpr("PNNL_", sdat[1])[[1]][1]
-    logger_name <- substr(sdat[1], start = pnnl_x, stop = pnnl_x + 6)
-
-    # The "I()" notation is how to read from a string; see help page
-    # Note we have no time zone information, so read the timestamp as character
-    x <- read_csv(I(sdat), skip = 1, col_types = "cddddddddddddddddd")
+    # After testing (see https://github.com/COMPASS-DOE/compasstools/issues/12)
+    # hard-coding column names and types is by far the fastest approach
+    # We have no time zone information, so read the timestamp as character
+    x <- read_csv(filename,
+                  col_names = c("Timestamp", "Record", "Statname", "BattV_Avg",
+                                "DiffVolt_Avg(1)", "DiffVolt_Avg(2)", "DiffVolt_Avg(3)",
+                                "DiffVolt_Avg(4)", "DiffVolt_Avg(5)", "DiffVolt_Avg(6)",
+                                "DiffVolt_Avg(7)", "DiffVolt_Avg(8)", "DiffVolt_Avg(9)",
+                                "DiffVolt_Avg(10)", "DiffVolt_Avg(11)", "DiffVolt_Avg(12)",
+                                "DiffVolt_Avg(13)", "DiffVolt_Avg(14)", "DiffVolt(1)",
+                                "DiffVolt(2)", "DiffVolt(3)", "DiffVolt(4)", "DiffVolt(5)",
+                                "DiffVolt(6)", "DiffVolt(7)", "DiffVolt(8)", "DiffVolt(9)",
+                                "DiffVolt(10)", "DiffVolt(11)", "DiffVolt(12)",
+                                "DiffVolt(13)", "DiffVolt(14)"
+),
+                  skip = skip,
+                  col_types = "cddddddddddddddddd")
     x$Logger <- logger_name
     x
 }
@@ -73,17 +75,14 @@ process_sapflow_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar 
     if(!nrow(x)) return(x)
 
     # Set to NULL so that R CMD CHECK doesn't generate notes
-    TIMESTAMP <- RECORD <- Timestamp <- Port <- Logger <- NULL
+    Timestamp <- Port <- Logger <- NULL
 
     # Do some basic processing:
     # concatenate, set time zone, reshape, clean up some fields
     x %>%
-        bind_rows() %>%
         distinct() %>%
         pivot_longer(cols = starts_with("DiffVolt_Avg"),
                      names_to = "Port", values_to = "Value") %>%
-        rename(Timestamp = TIMESTAMP,
-               Record = RECORD) %>%
         mutate(Timestamp = ymd_hms(Timestamp, tz = tz),
                # extract number from former col name;
                # for example, "DiffVolt_Avg(1)" becomes "1"

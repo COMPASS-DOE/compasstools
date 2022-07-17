@@ -1,7 +1,8 @@
 test_that("read_sapflow_file works", {
     x <- read_sapflow_file("test_data/PNNL_11_sapflow.dat")
     expect_s3_class(x, "data.frame")
-    expect_identical(nrow(x), 5L)
+    y <- readLines("test_data/PNNL_11_sapflow.dat")
+    expect_equal(nrow(x), length(y) - 4) # 4 header lines in sapflux files
 })
 
 test_that("process_sapflow_dir works locally", {
