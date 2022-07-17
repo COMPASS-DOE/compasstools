@@ -18,9 +18,8 @@ read_sapflow_file <- function(filename, min_timestamp = NULL) {
     skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
     if(skip == -1) return(tibble()) # entire file can be skipped
 
-    # Read line 1 - header info
-    dat_header <- read_lines(filename, n_max = 1)
     # Parse line one to extract logger name
+    dat_header <- read_lines(filename, n_max = 1)
     pnnl_x <- gregexpr("PNNL_", dat_header[1])[[1]][1]
     logger_name <- substr(dat_header[1], start = pnnl_x, stop = pnnl_x + 6)
 
@@ -28,11 +27,11 @@ read_sapflow_file <- function(filename, min_timestamp = NULL) {
     # hard-coding column names and types is by far the fastest approach
     # We have no time zone information, so read the timestamp as character
     x <- read_csv(filename,
+                  skip = skip + 4, # add 4 for header
                   col_names = c("Timestamp", "Record", "Statname", "BattV_Avg",
                                 paste0("DiffVolt_Avg(", 1:14, ")"),
                                 paste0("DiffVolt(", 1:14, ")")),
-                  skip = skip + 4, # add 4 for header
-                  col_types = "cddddddddddddddddd")
+                  col_types = paste0("c", strrep("d", 31)))
     x$Logger <- logger_name
     x
 }
