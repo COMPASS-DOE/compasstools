@@ -3,6 +3,8 @@
 #'
 #' @param filename Fully-qualified filename of a raw Aqua TROLL 600 dataset
 #' from a Campbell datalogger
+#' @param min_timestamp Minimum timestamp to read, character;
+#' function will skip down in the data until approximately this time
 #' @description This function uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
@@ -10,13 +12,24 @@
 #' @export
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_aquatroll_dir}}
-read_aquatroll600_file <- function(filename) {
-    # Lines 1, 3, and 4 of the Aqua TROLL 600 data files contain sensor metadata
-    # that we want to remove. Read the data files into a string vector, remove
-    # those lines, and then pass to read_csv()
-    rawdata <- readLines(filename)[-c(1, 3, 4)]
+read_aquatroll600_file <- function(filename, min_timestamp = NULL) {
+
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    if(skip == -1) return(tibble()) # entire file can be skipped
+
     # Note we have no time zone information, so read the timestamp as character
-    read_csv(I(rawdata), na = "NAN", col_types = paste0("cdcc", strrep("d", 19)))
+    read_csv(filename,
+             na = "NAN",
+             skip = skip + 4, # add 4 for header
+             col_names = c("Timestamp", "Record", "Statname", "Aquatroll_ID(1)",
+                           "Barometric_Pressure600", "Temperature600",
+                           "Actual_Conductivity600", "Specific_Conductivity600",
+                           "Salinity600", "TDS600", "Water_Density600",
+                           "Resistivity600", "pH600", "pH_mV600", "pH_ORP600",
+                           "RDO_concen600", "RDO_perc_sat600",
+                           "RDO_part_Pressure600", "Pressure600", "Depth600",
+                           "Temperature_Int600", "Voltage_Ext600", "Battery_Int600"),
+             col_types = paste0("cdcc", strrep("d", 19)))
 }
 
 
@@ -24,6 +37,8 @@ read_aquatroll600_file <- function(filename) {
 #'
 #' @param filename Fully-qualified filename of a raw Aqua TROLL 200 dataset
 #' from a Campbell datalogger
+#' @param min_timestamp Minimum timestamp to read, character;
+#' function will skip down in the data until approximately this time
 #' @description This function uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
@@ -31,13 +46,20 @@ read_aquatroll600_file <- function(filename) {
 #' @export
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_aquatroll_dir}}
-read_aquatroll200_file <- function(filename) {
-    # Lines 1, 3, and 4 of the Aqua TROLL 200 data files contain sensor metadata
-    # that we want to remove. Read the data files into a string vector, remove
-    # those lines, and then pass to read_csv()
-    rawdata <- readLines(filename)[-c(1, 3, 4)]
+read_aquatroll200_file <- function(filename, min_timestamp = NULL) {
+
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    if(skip == -1) return(tibble()) # entire file can be skipped
+
     # Note we have no time zone information, so read the timestamp as character
-    read_csv(I(rawdata), na = "NAN", col_types = paste0("cdccddddddddd"))
+    read_csv(filename,
+             na = "NAN",
+             skip = skip + 4, # add 4 for header
+             col_names = c("Timestamp", "Record", "Statname", "Aquatroll_ID(2)",
+                           "Depth", "Temperature", "Actual_Conductivity",
+                           "Specific_Conductivity", "Salinity", "TDS",
+                           "Water_Density", "Pressure", "Resistivity"),
+             col_types = "cdccddddddddd")
 }
 
 
@@ -63,7 +85,7 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL, progress_ba
 
     # Set to NULL so that R CMD CHECK doesn't generate notes
     Instrument<- Pressure<- Pressure600 <- RDO_concen600 <- Salinity <-
-        Salinity600 <- Statname <- TIMESTAMP <- Temperature <-
+        Salinity600 <- Statname <- Temperature <-
         Temperature600 <- Timestamp <- NULL
 
     # Read 200 and 600 files, make column names consistent, concatenate
@@ -74,7 +96,7 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL, progress_ba
                         progress_bar = progress_bar)
     x200 %>%
         mutate(Instrument = "TROLL200") %>%
-        select(Timestamp = TIMESTAMP, Logger_ID = Statname, Temp = Temperature,
+        select(Timestamp, Logger_ID = Statname, Temp = Temperature,
                Pressure_psi = Pressure, Salinity, Instrument) ->
         x200
 
@@ -85,7 +107,7 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL, progress_ba
                         progress_bar = progress_bar)
     x600 %>%
         mutate(Instrument = "TROLL600") %>%
-        select(Timestamp = TIMESTAMP, Temp = Temperature600,
+        select(Timestamp, Temp = Temperature600,
                Salinity = Salinity600, DO_mgl = RDO_concen600,
                Pressure_psi = Pressure600, Instrument, Logger_ID = Statname) ->
         x600

@@ -4,11 +4,14 @@
 \alias{read_aquatroll600_file}
 \title{Read a raw Aqua TROLL 600 data file}
 \usage{
-read_aquatroll600_file(filename)
+read_aquatroll600_file(filename, min_timestamp = NULL)
 }
 \arguments{
 \item{filename}{Fully-qualified filename of a raw Aqua TROLL 600 dataset
 from a Campbell datalogger}
+
+\item{min_timestamp}{Minimum timestamp to read, character;
+function will skip down in the data until approximately this time}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.
