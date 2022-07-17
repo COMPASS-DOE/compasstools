@@ -7,21 +7,21 @@ test_that("calculate_skip works", {
     tf <- file.path(tempdir(), "test.csv")
     readr::write_csv(dat, file = tf)
 
-    # If no min_timestamp, should return number of header rows only (no skip)
+    # If no min_timestamp, should return zero (no skip)
     sk <- calculate_skip(tf, header_rows = 1, min_timestamp = NULL)
-    expect_equal(sk, 1)
+    expect_equal(sk, 0)
 
     # If min_timestamp before any date in file, no skip
     before_ts <- min(dat$ts) - 1
     sk <- calculate_skip(tf, header_rows = 1,
                          min_timestamp = before_ts, quiet = TRUE)
-    expect_equal(sk, 1)
+    expect_equal(sk, 0)
 
     # If min_timestamp at 50% point of file, should get the right number
     sk <- suppressMessages(
         calculate_skip(tf, header_rows = 1,
                        min_timestamp = dat$ts[nrow(dat) / 2], quiet = TRUE))
-    expect_equal(sk, nrow(dat) / 2)
+    expect_equal(sk, nrow(dat) / 2 - 1)
 
     # If min_timestamp beyond all dates in file, -1 (signal to skip file)
     sk <- suppressMessages(

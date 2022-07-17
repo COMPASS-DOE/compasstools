@@ -13,14 +13,14 @@
 #' by 'peeking' at the first and last timestamps of the data, ignoring any
 #' header lines. We assume that the timestamps of the
 #' data are in ascending order and regular in their spacing.
-#' @return The number of lines OF THE FILE (not of the data) to skip.
-#' If the entire file should be skipped, a -1 is returned.
+#' @return The number of lines OF THE DATA (not of the file) to skip.
+#' If all data should be skipped, a -1 is returned.
 #' @note For high performance this uses the \code{fpeek} package.
 #' @import fpeek
 #' @importFrom utils capture.output tail
 calculate_skip <- function(filename, header_rows, min_timestamp,
                            parse_function = ymd_hms, quiet = FALSE) {
-    if(is.null(min_timestamp)) return(header_rows) # no data skip
+    if(is.null(min_timestamp)) return(0) # no data skip
 
     firstline <- tail(capture.output(peek_head(filename, header_rows + 1)), 1)
     lastline <-  capture.output(peek_tail(filename, n = 1))
@@ -42,14 +42,14 @@ calculate_skip <- function(filename, header_rows, min_timestamp,
         as.numeric(difftime(lts, fts, units = "secs"))
     skip <- as.integer(nlines * frac)
     if(!quiet) {
-        message("Skipping ", round(frac * 100, 0), "% of ",
-                basename(filename), " (min_timestamp = ", mts, ")")
+        message("Skipping ", skip, " rows (", round(frac * 100, 0), "%) of ",
+                basename(filename), " data (min_timestamp = ", mts, ")")
     }
     if(skip >= nlines) {
         return(-1)
     } else if(skip < 0) {
-        return(0 + header_rows)
+        return(0)
     } else {
-        return(skip + header_rows)
+        return(skip)
     }
 }

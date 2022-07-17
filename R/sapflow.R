@@ -39,7 +39,7 @@ read_sapflow_file <- function(filename, min_timestamp = NULL) {
                                 "DiffVolt(10)", "DiffVolt(11)", "DiffVolt(12)",
                                 "DiffVolt(13)", "DiffVolt(14)"
 ),
-                  skip = skip,
+                  skip = skip + 4, # add 4 for header
                   col_types = "cddddddddddddddddd")
     x$Logger <- logger_name
     x

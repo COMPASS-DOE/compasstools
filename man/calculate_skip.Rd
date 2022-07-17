@@ -24,8 +24,8 @@ calculate_skip(
 \item{quiet}{Print diagnostic message? Logical}
 }
 \value{
-The number of lines OF THE FILE (not of the data) to skip.
-If the entire file should be skipped, a -1 is returned.
+The number of lines OF THE DATA (not of the file) to skip.
+If all data should be skipped, a -1 is returned.
 }
 \description{
 This internal function returns the number of lines of a
