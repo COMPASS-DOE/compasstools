@@ -29,16 +29,8 @@ read_sapflow_file <- function(filename, min_timestamp = NULL) {
     # We have no time zone information, so read the timestamp as character
     x <- read_csv(filename,
                   col_names = c("Timestamp", "Record", "Statname", "BattV_Avg",
-                                "DiffVolt_Avg(1)", "DiffVolt_Avg(2)", "DiffVolt_Avg(3)",
-                                "DiffVolt_Avg(4)", "DiffVolt_Avg(5)", "DiffVolt_Avg(6)",
-                                "DiffVolt_Avg(7)", "DiffVolt_Avg(8)", "DiffVolt_Avg(9)",
-                                "DiffVolt_Avg(10)", "DiffVolt_Avg(11)", "DiffVolt_Avg(12)",
-                                "DiffVolt_Avg(13)", "DiffVolt_Avg(14)", "DiffVolt(1)",
-                                "DiffVolt(2)", "DiffVolt(3)", "DiffVolt(4)", "DiffVolt(5)",
-                                "DiffVolt(6)", "DiffVolt(7)", "DiffVolt(8)", "DiffVolt(9)",
-                                "DiffVolt(10)", "DiffVolt(11)", "DiffVolt(12)",
-                                "DiffVolt(13)", "DiffVolt(14)"
-),
+                                paste0("DiffVolt_Avg(", 1:14, ")"),
+                                paste0("DiffVolt(", 1:14, ")")),
                   skip = skip + 4, # add 4 for header
                   col_types = "cddddddddddddddddd")
     x$Logger <- logger_name
