@@ -29,7 +29,7 @@ The number of lines OF THE FILE (not of the data) to skip.
 \description{
 This internal function returns the number of lines of a
 file to skip based on a requested minimum timestamp to read. It does so
-by peeking' at the first and last timestamps of the data, ignoring any
+by 'peeking' at the first and last timestamps of the data, ignoring any
 header lines. We assume that the timestamps of the
 data are in ascending order and regular in their spacing.
 }

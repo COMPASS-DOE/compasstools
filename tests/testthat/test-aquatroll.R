@@ -16,7 +16,7 @@ test_that("process_aquatroll_dir works locally", {
     # Currently this only tests non-Dropbox reading
     x <- process_aquatroll_dir("test_data/", tz = "Europe/London")
     expect_s3_class(x, "data.frame")
-    nfiles <- length(list.files("test_data/", pattern = "[2|6]00"))
+    nfiles <- length(list.files("test_data/", pattern = "[2|6]00\\.dat$"))
     expect_identical(length(unique(x$Logger_ID)), nfiles)
     expect_identical(lubridate::tz(x$Timestamp[1]), "Europe/London") # timezone set correctly
 
