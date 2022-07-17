@@ -1,8 +1,29 @@
 test_that("read_teros_file works", {
-    x <- read_teros_file("test_data/PNNL_11_Terosdata.dat")
-    y <- readLines("test_data/PNNL_11_Terosdata.dat")
+    filename <- "test_data/PNNL_11_Terosdata.dat"
+    x <- read_teros_file(filename)
+    y <- readLines(filename)
     expect_s3_class(x, "data.frame")
     expect_equal(nrow(x), length(y) - 4) # 4 header lines in TEROS files
+
+    # min_timestamp works as expected...
+
+    # timestamp before the file: reads all data
+    z <- suppressMessages(
+        read_teros_file(filename, min_timestamp =
+                            ymd_hms(min(x$Timestamp[1])) - 1))
+    expect_identical(nrow(z), nrow(x))
+
+    # timestamp after the file: skips all data
+    z <- suppressMessages(
+        read_teros_file(filename, min_timestamp =
+                            ymd_hms(max(x$Timestamp)) + 1))
+    expect_identical(nrow(z), 0L)
+
+    # timestamp in file: returns correct amount of data
+    mid_timestamp <- x$Timestamp[nrow(x) / 2]
+    z <- suppressMessages(
+        read_teros_file(filename, mid_timestamp))
+    expect_equal(z, subset(x, x$Timestamp >= mid_timestamp))
 })
 
 test_that("process_teros_dir works locally", {

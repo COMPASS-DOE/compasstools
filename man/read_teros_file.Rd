@@ -4,11 +4,14 @@
 \alias{read_teros_file}
 \title{Read a raw TEROS data file}
 \usage{
-read_teros_file(filename)
+read_teros_file(filename, min_timestamp = NULL)
 }
 \arguments{
 \item{filename}{Fully-qualified filename of a raw TEROS dataset
 from a Campbell datalogger}
+
+\item{min_timestamp}{Minimum timestamp to read, character;
+function will skip down in the data until approximately this time}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.
