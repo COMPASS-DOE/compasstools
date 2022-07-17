@@ -16,7 +16,7 @@
 read_sapflow_file <- function(filename, min_timestamp = NULL) {
 
     skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
-    if(skip == -1) return(tibble())
+    if(skip == -1) return(tibble()) # entire file can be skipped
 
     # Read line 1 - header info
     dat_header <- read_lines(filename, n_max = 1)
