@@ -14,6 +14,7 @@
 #' header lines. We assume that the timestamps of the
 #' data are in ascending order and regular in their spacing.
 #' @return The number of lines OF THE FILE (not of the data) to skip.
+#' If the entire file should be skipped, a -1 is returned.
 #' @note For high performance this uses the \code{fpeek} package.
 #' @import fpeek
 #' @importFrom utils capture.output tail

@@ -7,19 +7,19 @@ test_that("read_sapflow_file works", {
 
     # min_timestamp works as expected...
 
-    # timestamp before the file reads all data
+    # timestamp before the file: reads all data
     z <- suppressMessages(
         read_sapflow_file(filename, min_timestamp =
                               ymd_hms(min(x$Timestamp[1])) - 1))
     expect_identical(nrow(z), nrow(x))
 
-    # timestamp after the file skips all data
+    # timestamp after the file: skips all data
     z <- suppressMessages(
         read_sapflow_file(filename, min_timestamp =
                               ymd_hms(max(x$Timestamp)) + 1))
     expect_identical(nrow(z), 0L)
 
-    # timestamp in file returns correct amount of data
+    # timestamp in file: returns correct amount of data
     mid_timestamp <- x$Timestamp[nrow(x) / 2]
     z <- suppressMessages(
         read_sapflow_file(filename, mid_timestamp))
