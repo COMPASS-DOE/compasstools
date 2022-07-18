@@ -3,6 +3,8 @@
 #'
 #' @param filename Fully-qualified filename of a raw TEROS dataset
 #' from a Campbell datalogger
+#' @param min_timestamp Minimum timestamp to read, character;
+#' function will skip down in the data until approximately this time
 #' @description This function uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
@@ -10,13 +12,19 @@
 #' @export
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_teros_dir}}
-read_teros_file <- function(filename) {
-    # Lines 1, 3, and 4 of the TEROS data files contain sensor metadata that we
-    # want to remove. Read the data files into a string vector, remove those
-    # lines, and then pass to read_csv()
-    rawdata <- readLines(filename)[-c(1, 3, 4)]
+read_teros_file <- function(filename, min_timestamp = NULL) {
+
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    if(skip == -1) return(tibble()) # entire file can be skipped
+
+    # Generate "Teros(1, 1)", "Teros(1, 2)", "Teros(1, 3)", "Teros(2, 1)", etc.
+    teros_names <- sapply(1:22, function(x) paste0("Teros(", x, ", ", 1:3, ")"))
     # Note we have no time zone information, so read the timestamp as character
-    read_csv(I(rawdata), na = "NAN", col_types = paste0("cdc", strrep("d", 66)))
+    read_csv(filename, na = "NAN",
+             skip = skip + 4, # add 4 for header
+             col_names = c("Timestamp", "Record", "Statname",
+                           as.vector(teros_names)),
+             col_types = paste0("cdc", strrep("d", 66)))
 }
 
 
@@ -49,7 +57,7 @@ process_teros_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = 
     if(!nrow(x)) return(x)
 
     # Set to NULL so that R CMD CHECK doesn't generate notes
-    Data_Table_ID <- Inst <- Logger <- RECORD <- Statname <- TIMESTAMP <-
+    Data_Table_ID <- Inst <- Logger <- Statname <- Timestamp <-
         channel <- value <- variable <- NULL
 
     # Do some basic processing: reshape, set time zone, parse fields
@@ -61,8 +69,7 @@ process_teros_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = 
         # Parse the data logger number, channel number, and variable number out of the
         # Statname and Channel columns
         mutate(Logger = as.integer(Logger, fixed = TRUE),
-               TIMESTAMP = ymd_hms(TIMESTAMP, tz = tz)) %>%
-        rename(Timestamp = TIMESTAMP, Record = RECORD) %>%
+               Timestamp = ymd_hms(Timestamp, tz = tz)) %>%
         select(-Inst) %>%  # unneeded
         # Next, parse channel into the data logger channel and variable number
         separate(channel, into = c("Data_Table_ID", "variable"), sep = ",") %>%

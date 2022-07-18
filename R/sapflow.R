@@ -3,26 +3,35 @@
 #'
 #' @param filename Fully-qualified filename of a raw sapflow dataset
 #' from a Campbell datalogger
+#' @param min_timestamp Minimum timestamp to read, character;
+#' function will skip down in the data until approximately this time
 #' @description This function reads a local file of raw sapflow data,
 #' extracts the logger number from the header, and uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
-#' @importFrom readr read_csv
+#' @importFrom readr read_csv read_lines
 #' @seealso \code{\link{process_sapflow_dir}}
-read_sapflow_file <- function(filename) {
+read_sapflow_file <- function(filename, min_timestamp = NULL) {
 
-    sdat <- readLines(filename)
-    sdat <- sdat[-3:-4] # remove lines 3 and 4 with unneeded information
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    if(skip == -1) return(tibble()) # entire file can be skipped
 
-    # parse line one to extract logger name
-    pnnl_x <- gregexpr("PNNL_", sdat[1])[[1]][1]
-    logger_name <- substr(sdat[1], start = pnnl_x, stop = pnnl_x + 6)
+    # Parse line one to extract logger name
+    dat_header <- read_lines(filename, n_max = 1)
+    pnnl_x <- gregexpr("PNNL_", dat_header[1])[[1]][1]
+    logger_name <- substr(dat_header[1], start = pnnl_x, stop = pnnl_x + 6)
 
-    # The "I()" notation is how to read from a string; see help page
-    # Note we have no time zone information, so read the timestamp as character
-    x <- read_csv(I(sdat), skip = 1, col_types = "cddddddddddddddddd")
+    # After testing (see https://github.com/COMPASS-DOE/compasstools/issues/12)
+    # hard-coding column names and types is by far the fastest approach
+    # We have no time zone information, so read the timestamp as character
+    x <- read_csv(filename,
+                  skip = skip + 4, # add 4 for header
+                  col_names = c("Timestamp", "Record", "Statname", "BattV_Avg",
+                                paste0("DiffVolt_Avg(", 1:14, ")"),
+                                paste0("DiffVolt(", 1:14, ")")),
+                  col_types = paste0("c", strrep("d", 31)))
     x$Logger <- logger_name
     x
 }
@@ -57,17 +66,14 @@ process_sapflow_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar 
     if(!nrow(x)) return(x)
 
     # Set to NULL so that R CMD CHECK doesn't generate notes
-    TIMESTAMP <- RECORD <- Timestamp <- Port <- Logger <- NULL
+    Timestamp <- Port <- Logger <- NULL
 
     # Do some basic processing:
     # concatenate, set time zone, reshape, clean up some fields
     x %>%
-        bind_rows() %>%
         distinct() %>%
         pivot_longer(cols = starts_with("DiffVolt_Avg"),
                      names_to = "Port", values_to = "Value") %>%
-        rename(Timestamp = TIMESTAMP,
-               Record = RECORD) %>%
         mutate(Timestamp = ymd_hms(Timestamp, tz = tz),
                # extract number from former col name;
                # for example, "DiffVolt_Avg(1)" becomes "1"

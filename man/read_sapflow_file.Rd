@@ -4,11 +4,14 @@
 \alias{read_sapflow_file}
 \title{Read a raw sapflow data file}
 \usage{
-read_sapflow_file(filename)
+read_sapflow_file(filename, min_timestamp = NULL)
 }
 \arguments{
 \item{filename}{Fully-qualified filename of a raw sapflow dataset
 from a Campbell datalogger}
+
+\item{min_timestamp}{Minimum timestamp to read, character;
+function will skip down in the data until approximately this time}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.
