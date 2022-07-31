@@ -20,6 +20,10 @@ A \code{\link[tibble]{tibble}} with the data.
 This function uses
 \code{\link[readr]{read_csv}} to parse the file into a data frame.
 }
+\examples{
+fn <- system.file("PNNL_11_Terosdata.dat", package = "compasstools")
+read_teros_file(fn)
+}
 \seealso{
 \code{\link{process_teros_dir}}
 }

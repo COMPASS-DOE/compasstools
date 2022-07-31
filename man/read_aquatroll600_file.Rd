@@ -20,6 +20,10 @@ A \code{\link[tibble]{tibble}} with the data.
 This function uses
 \code{\link[readr]{read_csv}} to parse the file into a data frame.
 }
+\examples{
+fn <- system.file("PNNL_23_WaterLevel600.dat", package = "compasstools")
+read_aquatroll600_file(fn)
+}
 \seealso{
 \code{\link{process_aquatroll_dir}}
 }

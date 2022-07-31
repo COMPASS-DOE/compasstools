@@ -12,6 +12,9 @@
 #' @export
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_aquatroll_dir}}
+#' @examples
+#' fn <- system.file("PNNL_23_WaterLevel600.dat", package = "compasstools")
+#' read_aquatroll600_file(fn)
 read_aquatroll600_file <- function(filename, min_timestamp = NULL) {
 
     skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
@@ -46,6 +49,9 @@ read_aquatroll600_file <- function(filename, min_timestamp = NULL) {
 #' @export
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_aquatroll_dir}}
+#' @examples
+#' fn <- system.file("PNNL_21_WaterLevel200.dat", package = "compasstools")
+#' read_aquatroll200_file(fn)
 read_aquatroll200_file <- function(filename, min_timestamp = NULL) {
 
     skip <- calculate_skip(filename, header_rows = 4, min_timestamp)

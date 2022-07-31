@@ -13,6 +13,9 @@
 #' @export
 #' @importFrom readr read_csv read_lines
 #' @seealso \code{\link{process_sapflow_dir}}
+#' @examples
+#' fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
+#' read_sapflow_file(fn)
 read_sapflow_file <- function(filename, min_timestamp = NULL) {
 
     skip <- calculate_skip(filename, header_rows = 4, min_timestamp)

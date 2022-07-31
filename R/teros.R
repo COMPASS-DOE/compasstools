@@ -12,6 +12,9 @@
 #' @export
 #' @importFrom readr read_csv
 #' @seealso \code{\link{process_teros_dir}}
+#' @examples
+#' fn <- system.file("PNNL_11_Terosdata.dat", package = "compasstools")
+#' read_teros_file(fn)
 read_teros_file <- function(filename, min_timestamp = NULL) {
 
     skip <- calculate_skip(filename, header_rows = 4, min_timestamp)

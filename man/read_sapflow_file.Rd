@@ -21,6 +21,10 @@ This function reads a local file of raw sapflow data,
 extracts the logger number from the header, and uses
 \code{\link[readr]{read_csv}} to parse the file into a data frame.
 }
+\examples{
+fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
+read_sapflow_file(fn)
+}
 \seealso{
 \code{\link{process_sapflow_dir}}
 }
