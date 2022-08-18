@@ -59,6 +59,7 @@ process_teros_dir <- function(datadir, tz, dropbox_token = NULL,
                      read_function = read_teros_file,
                      dropbox_token = dropbox_token,
                      progress_bar = progress_bar,
+                     # other parameters to be passed to read_teros_file
                      ...)
 
     if(!nrow(x)) return(x)

@@ -105,6 +105,7 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL,
                         read_function = read_aquatroll200_file,
                         dropbox_token = dropbox_token,
                         progress_bar = progress_bar,
+                        # other parameters to be passed to read_aquatroll200_file
                         ...)
     x200 %>%
         mutate(Instrument = "TROLL200") %>%
@@ -117,6 +118,7 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL,
                         read_function = read_aquatroll600_file,
                         dropbox_token = dropbox_token,
                         progress_bar = progress_bar,
+                        # other parameters to be passed to read_aquatroll600_file
                         ...)
     x600 %>%
         mutate(Instrument = "TROLL600") %>%
