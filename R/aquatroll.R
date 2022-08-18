@@ -107,11 +107,13 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL,
                         progress_bar = progress_bar,
                         # other parameters to be passed to read_aquatroll200_file
                         ...)
-    x200 %>%
-        mutate(Instrument = "TROLL200") %>%
-        select(Timestamp, Logger_ID = Statname, Temp = Temperature,
-               Pressure_psi = Pressure, Salinity, Instrument) ->
-        x200
+    if(nrow(x200)) {
+        x200 %>%
+            mutate(Instrument = "TROLL200") %>%
+            select(Timestamp, Logger_ID = Statname, Temp = Temperature,
+                   Pressure_psi = Pressure, Salinity, Instrument) ->
+            x200
+    }
 
     x600 <- process_dir(datadir,
                         pattern = "600\\.dat$",
@@ -120,12 +122,14 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL,
                         progress_bar = progress_bar,
                         # other parameters to be passed to read_aquatroll600_file
                         ...)
-    x600 %>%
-        mutate(Instrument = "TROLL600") %>%
-        select(Timestamp, Temp = Temperature600,
-               Salinity = Salinity600, DO_mgl = RDO_concen600,
-               Pressure_psi = Pressure600, Instrument, Logger_ID = Statname) ->
-        x600
+    if(nrow(x600)) {
+        x600 %>%
+            mutate(Instrument = "TROLL600") %>%
+            select(Timestamp, Temp = Temperature600,
+                   Salinity = Salinity600, DO_mgl = RDO_concen600,
+                   Pressure_psi = Pressure600, Instrument, Logger_ID = Statname) ->
+            x600
+    }
 
     x <- bind_rows(x200, x600)
     if(!nrow(x)) return(x)
