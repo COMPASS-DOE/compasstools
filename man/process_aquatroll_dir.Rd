@@ -4,7 +4,13 @@
 \alias{process_aquatroll_dir}
 \title{Read and process a directory of Aqua TROLL files}
 \usage{
-process_aquatroll_dir(datadir, tz, dropbox_token = NULL, progress_bar = NULL)
+process_aquatroll_dir(
+  datadir,
+  tz,
+  dropbox_token = NULL,
+  progress_bar = NULL,
+  ...
+)
 }
 \arguments{
 \item{datadir}{Directory, either in Dropbox or local}
@@ -14,6 +20,9 @@ process_aquatroll_dir(datadir, tz, dropbox_token = NULL, progress_bar = NULL)
 \item{dropbox_token}{Optional Dropbox token}
 
 \item{progress_bar}{Optional progress bar to call while reading}
+
+\item{...}{Other parameters to be passed to \code{\link{read_aquatroll200_file}}
+or \code{\link{read_aquatroll600_file}}}
 }
 \value{
 All Aqua TROLL files in directory, read and concatenated, with some

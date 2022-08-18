@@ -5,6 +5,7 @@
 #' from a Campbell datalogger
 #' @param min_timestamp Minimum timestamp to read, character;
 #' function will skip down in the data until approximately this time
+#' @param quiet Print diagnostic messages? Logical
 #' @description This function uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
@@ -15,9 +16,9 @@
 #' @examples
 #' fn <- system.file("PNNL_11_Terosdata.dat", package = "compasstools")
 #' read_teros_file(fn)
-read_teros_file <- function(filename, min_timestamp = NULL) {
+read_teros_file <- function(filename, min_timestamp = NULL, quiet = FALSE) {
 
-    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp, quiet = quiet)
     if(skip == -1) return(tibble()) # entire file can be skipped
 
     # Generate "Teros(1, 1)", "Teros(1, 2)", "Teros(1, 3)", "Teros(2, 1)", etc.
@@ -37,6 +38,7 @@ read_teros_file <- function(filename, min_timestamp = NULL) {
 #' @param tz Time zone the data are set to
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
+#' @param ... Other parameters to be passed to \code{\link{read_teros_file}}
 #' @description Read a directory of TEROS files, either from Dropbox or
 #' locally.
 #' @return All TEROS files in directory, read and concatenated, with some
@@ -49,13 +51,16 @@ read_teros_file <- function(filename, min_timestamp = NULL) {
 #' @seealso \code{\link{read_teros_file}}
 #' @export
 #' @author Ben Bond-Lamberty
-process_teros_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = NULL) {
+process_teros_dir <- function(datadir, tz, dropbox_token = NULL,
+                              progress_bar = NULL, ...) {
 
     x <- process_dir(datadir,
                      pattern = "Terosdata\\.dat$",
                      read_function = read_teros_file,
                      dropbox_token = dropbox_token,
-                     progress_bar = progress_bar)
+                     progress_bar = progress_bar,
+                     # other parameters to be passed to read_teros_file
+                     ...)
 
     if(!nrow(x)) return(x)
 

@@ -4,12 +4,13 @@
 #' @param filename A Dropbox filename, e.g. returned by \code{drop_dir}
 #' @param token A dropbox token
 #' @param read_function A function to read the downloaded file with
+#' @param ... Other parameters to be passed to \code{read_function}
 #' @description This function downloads and reads (via a caller-supplied
 #' function) a file on Dropbox.
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export
 #' @author Ben Bond-Lamberty
-read_file_dropbox <- function(filename, token, read_function) {
+read_file_dropbox <- function(filename, token, read_function, ...) {
     # We don't want users to need rdrop2 to use this package (i.e. we don't
     # want to put it in DESCRIPTION's Imports:), so check for availability
     if(requireNamespace("rdrop2", quietly = TRUE)) {
@@ -17,7 +18,7 @@ read_file_dropbox <- function(filename, token, read_function) {
         tf <- tempfile()
         rdrop2::drop_download(filename, local_path = tf,
                               dtoken = token, overwrite = TRUE)
-        read_function(tf)
+        read_function(tf, ...)
     } else {
         stop("rdrop2 package is not available")
     }
@@ -31,6 +32,7 @@ read_file_dropbox <- function(filename, token, read_function) {
 #' @param read_function The file-read function to use
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
+#' @param ... Other parameters to be passed to \code{read_function}
 #' @description A general-purpose function to read data files, either from
 #' Dropbox or locally. The function identifies files based on a pattern,
 #' reads data from each file, and binds them together Callers
@@ -44,7 +46,8 @@ read_file_dropbox <- function(filename, token, read_function) {
 #' over \code{\link{rbind}}
 #' @author Ben Bond-Lamberty
 process_dir <- function(datadir, pattern, read_function,
-                        dropbox_token = NULL, progress_bar = NULL) {
+                        dropbox_token = NULL,
+                        progress_bar = NULL, ...) {
 
     local <- is.null(dropbox_token)
 
@@ -68,9 +71,9 @@ process_dir <- function(datadir, pattern, read_function,
         if(!is.null(progress_bar)) progress_bar(1 / total_files)
         # Read file, either locally or from Dropbox
         if(local) {
-            read_function(filename)
+            read_function(filename, ...)
         } else {
-            read_file_dropbox(filename, dropbox_token, read_function)
+            read_file_dropbox(filename, dropbox_token, read_function, ...)
         }
     }
     x <- lapply(s_files, f, read_function, dropbox_token, length(s_files))

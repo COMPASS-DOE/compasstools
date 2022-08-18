@@ -5,6 +5,7 @@
 #' from a Campbell datalogger
 #' @param min_timestamp Minimum timestamp to read, character;
 #' function will skip down in the data until approximately this time
+#' @param quiet Print diagnostic messages? Logical
 #' @description This function reads a local file of raw sapflow data,
 #' extracts the logger number from the header, and uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
@@ -16,9 +17,9 @@
 #' @examples
 #' fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
 #' read_sapflow_file(fn)
-read_sapflow_file <- function(filename, min_timestamp = NULL) {
+read_sapflow_file <- function(filename, min_timestamp = NULL, quiet = FALSE) {
 
-    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp, quiet = quiet)
     if(skip == -1) return(tibble()) # entire file can be skipped
 
     # Parse line one to extract logger name
@@ -46,6 +47,7 @@ read_sapflow_file <- function(filename, min_timestamp = NULL) {
 #' @param tz Time zone the data are set to
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
+#' @param ... Other parameters to be passed to \code{\link{read_sapflow_file}}
 #' @description Read a directory of sapflow files, either from Dropbox or
 #' locally.
 #' @return All sapflow files in directory, read and concatenated, with some
@@ -58,13 +60,18 @@ read_sapflow_file <- function(filename, min_timestamp = NULL) {
 #' @seealso \code{\link{read_sapflow_file}}
 #' @export
 #' @author Ben Bond-Lamberty
-process_sapflow_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = NULL) {
+process_sapflow_dir <- function(datadir, tz,
+                                dropbox_token = NULL,
+                                progress_bar = NULL,
+                                ...) {
 
     x <- process_dir(datadir,
                      pattern = "sapflow\\.dat$",
                      read_function = read_sapflow_file,
                      dropbox_token = dropbox_token,
-                     progress_bar = progress_bar)
+                     progress_bar = progress_bar,
+                     # other parameters to be passed to read_sapflow_file
+                     ...)
 
     if(!nrow(x)) return(x)
 

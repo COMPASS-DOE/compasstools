@@ -4,7 +4,7 @@
 \alias{process_teros_dir}
 \title{Read and process a directory of TEROS files}
 \usage{
-process_teros_dir(datadir, tz, dropbox_token = NULL, progress_bar = NULL)
+process_teros_dir(datadir, tz, dropbox_token = NULL, progress_bar = NULL, ...)
 }
 \arguments{
 \item{datadir}{Directory, either in Dropbox or local}
@@ -14,6 +14,8 @@ process_teros_dir(datadir, tz, dropbox_token = NULL, progress_bar = NULL)
 \item{dropbox_token}{Optional Dropbox token}
 
 \item{progress_bar}{Optional progress bar to call while reading}
+
+\item{...}{Other parameters to be passed to \code{\link{read_teros_file}}}
 }
 \value{
 All TEROS files in directory, read and concatenated, with some
