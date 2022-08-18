@@ -4,7 +4,7 @@
 \alias{read_file_dropbox}
 \title{Download and read a data file from Dropbox}
 \usage{
-read_file_dropbox(filename, token, read_function)
+read_file_dropbox(filename, token, read_function, ...)
 }
 \arguments{
 \item{filename}{A Dropbox filename, e.g. returned by \code{drop_dir}}
@@ -12,6 +12,8 @@ read_file_dropbox(filename, token, read_function)
 \item{token}{A dropbox token}
 
 \item{read_function}{A function to read the downloaded file with}
+
+\item{...}{Other parameters to be passed to \code{read_function}}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.

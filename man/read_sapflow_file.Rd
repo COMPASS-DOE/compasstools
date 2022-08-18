@@ -4,7 +4,7 @@
 \alias{read_sapflow_file}
 \title{Read a raw sapflow data file}
 \usage{
-read_sapflow_file(filename, min_timestamp = NULL)
+read_sapflow_file(filename, min_timestamp = NULL, quiet = FALSE)
 }
 \arguments{
 \item{filename}{Fully-qualified filename of a raw sapflow dataset

@@ -9,7 +9,8 @@ process_dir(
   pattern,
   read_function,
   dropbox_token = NULL,
-  progress_bar = NULL
+  progress_bar = NULL,
+  ...
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ process_dir(
 \item{dropbox_token}{Optional Dropbox token}
 
 \item{progress_bar}{Optional progress bar to call while reading}
+
+\item{...}{Other parameters to be passed to \code{read_function}}
 }
 \value{
 All data files in directory, read and concatenated
