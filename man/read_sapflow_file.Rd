@@ -12,6 +12,8 @@ from a Campbell datalogger}
 
 \item{min_timestamp}{Minimum timestamp to read, character;
 function will skip down in the data until approximately this time}
+
+\item{quiet}{Print diagnostic messages? Logical}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.

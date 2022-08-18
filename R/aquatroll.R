@@ -5,6 +5,7 @@
 #' from a Campbell datalogger
 #' @param min_timestamp Minimum timestamp to read, character;
 #' function will skip down in the data until approximately this time
+#' @param quiet Print diagnostic messages? Logical
 #' @description This function uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
@@ -15,9 +16,9 @@
 #' @examples
 #' fn <- system.file("PNNL_23_WaterLevel600.dat", package = "compasstools")
 #' read_aquatroll600_file(fn)
-read_aquatroll600_file <- function(filename, min_timestamp = NULL) {
+read_aquatroll600_file <- function(filename, min_timestamp = NULL, quiet = FALSE) {
 
-    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp, quiet = quiet)
     if(skip == -1) return(tibble()) # entire file can be skipped
 
     # Note we have no time zone information, so read the timestamp as character
@@ -42,6 +43,7 @@ read_aquatroll600_file <- function(filename, min_timestamp = NULL) {
 #' from a Campbell datalogger
 #' @param min_timestamp Minimum timestamp to read, character;
 #' function will skip down in the data until approximately this time
+#' @param quiet Print diagnostic messages? Logical
 #' @description This function uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
 #' @author Stephanie Pennington
@@ -52,9 +54,9 @@ read_aquatroll600_file <- function(filename, min_timestamp = NULL) {
 #' @examples
 #' fn <- system.file("PNNL_21_WaterLevel200.dat", package = "compasstools")
 #' read_aquatroll200_file(fn)
-read_aquatroll200_file <- function(filename, min_timestamp = NULL) {
+read_aquatroll200_file <- function(filename, min_timestamp = NULL, quiet = FALSE) {
 
-    skip <- calculate_skip(filename, header_rows = 4, min_timestamp)
+    skip <- calculate_skip(filename, header_rows = 4, min_timestamp, quiet = quiet)
     if(skip == -1) return(tibble()) # entire file can be skipped
 
     # Note we have no time zone information, so read the timestamp as character
@@ -75,6 +77,8 @@ read_aquatroll200_file <- function(filename, min_timestamp = NULL) {
 #' @param tz Time zone the data are set to
 #' @param dropbox_token Optional Dropbox token
 #' @param progress_bar Optional progress bar to call while reading
+#' @param ... Other parameters to be passed to \code{\link{read_aquatroll200_file}}
+#' or \code{\link{read_aquatroll600_file}}
 #' @description Read a directory of Aqua TROLL 200 and/or 600 files,
 #' either from Dropbox or locally.
 #' @return All Aqua TROLL files in directory, read and concatenated, with some
@@ -87,10 +91,11 @@ read_aquatroll200_file <- function(filename, min_timestamp = NULL) {
 #' @seealso \code{\link{read_aquatroll200_file}} \code{\link{read_aquatroll600_file}}
 #' @export
 #' @author Ben Bond-Lamberty
-process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL, progress_bar = NULL) {
+process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL,
+                                  progress_bar = NULL, ...) {
 
     # Set to NULL so that R CMD CHECK doesn't generate notes
-    Instrument<- Pressure<- Pressure600 <- RDO_concen600 <- Salinity <-
+    Instrument <- Pressure<- Pressure600 <- RDO_concen600 <- Salinity <-
         Salinity600 <- Statname <- Temperature <-
         Temperature600 <- Timestamp <- NULL
 
@@ -99,7 +104,8 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL, progress_ba
                         pattern = "200\\.dat$",
                         read_function = read_aquatroll200_file,
                         dropbox_token = dropbox_token,
-                        progress_bar = progress_bar)
+                        progress_bar = progress_bar,
+                        ...)
     x200 %>%
         mutate(Instrument = "TROLL200") %>%
         select(Timestamp, Logger_ID = Statname, Temp = Temperature,
@@ -110,7 +116,8 @@ process_aquatroll_dir <- function(datadir, tz, dropbox_token = NULL, progress_ba
                         pattern = "600\\.dat$",
                         read_function = read_aquatroll600_file,
                         dropbox_token = dropbox_token,
-                        progress_bar = progress_bar)
+                        progress_bar = progress_bar,
+                        ...)
     x600 %>%
         mutate(Instrument = "TROLL600") %>%
         select(Timestamp, Temp = Temperature600,

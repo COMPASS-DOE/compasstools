@@ -34,6 +34,17 @@ test_that("process_teros_dir works locally", {
     expect_identical(length(unique(x$Logger)), nfiles)
     expect_identical(lubridate::tz(x$Timestamp[1]), "Europe/London") # timezone set correctly
 
+    # Handles min_timestamp
+    max_ts <- max(x$Timestamp)
+    y <- process_teros_dir("test_data/", tz = "EST",
+                             min_timestamp = as.character(max_ts - 1),
+                             quiet = TRUE)
+    expect_gte(min(y$Timestamp), max_ts)
+    y <- process_teros_dir("test_data/", tz = "EST",
+                             min_timestamp = as.character(max_ts + 1),
+                             quiet = TRUE)
+    expect_identical(nrow(y), 0L)
+
     # Handles an empty directory
     x <- process_sapflow_dir(tempdir())
     expect_s3_class(x, "data.frame")

@@ -5,6 +5,7 @@
 #' from a Campbell datalogger
 #' @param min_timestamp Minimum timestamp to read, character;
 #' function will skip down in the data until approximately this time
+#' @param quiet Print diagnostic messages? Logical
 #' @description This function reads a local file of raw sapflow data,
 #' extracts the logger number from the header, and uses
 #' \code{\link[readr]{read_csv}} to parse the file into a data frame.
