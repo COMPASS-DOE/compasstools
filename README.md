@@ -6,3 +6,7 @@
 # compasstools
 
 COMPASS utilities and tools
+
+```
+devtools::install_github("COMPASS-DOE/compasstools")
+```
