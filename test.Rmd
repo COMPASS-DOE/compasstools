@@ -1,0 +1,55 @@
+---
+title: "test"
+author: "BBL"
+date: "2022-10-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Data processing
+
+## Raw file
+
+```{r}
+fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
+dat_raw <- readLines(fn)
+head(dat_raw)
+```
+
+## Using `read_sapflow_file()` {.tabset}
+
+### Running it
+
+```{r}
+library(compasstools)
+library(DT)
+dat1 <- read_sapflow_file(fn)
+DT::datatable(dat1)
+```
+
+### Code
+
+```{r}
+print(read_sapflow_file)
+```
+
+## Using `process_sapflow_dir()` {.tabset}
+
+### Running it
+
+```{r}
+td <- tempdir()
+newfile <- file.path(td, "sapflow.dat")
+writeLines(dat_raw, con = newfile)
+dat2 <- process_sapflow_dir(td, tz = "EST")
+DT::datatable(dat2)
+```
+
+### Code
+
+```{r}
+print(read_sapflow_file)
+```

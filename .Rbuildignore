@@ -3,3 +3,5 @@
 ^\.github$
 ^codecov\.yml$
 ^LICENSE\.md$
+^.*\.Rmd$
+^.*\.html$
