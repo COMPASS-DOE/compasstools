@@ -1,55 +1,74 @@
 ---
-title: "test"
-author: "BBL"
+title: "Example Pipeline using `compasstools`"
 date: "2022-10-04"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+pacman::p_load(compasstools, kableExtra, readr, dplyr, DT)
 ```
 
-# Data processing
+![](images/function-diagram.png) *Figure | Flowchart of potential pathways of using `compasstools`* for sapflow sensor data processing
 
-## Raw file
+## Raw file 
 
 ```{r}
 fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
 dat_raw <- readLines(fn)
-head(dat_raw)
+kable(dat_raw) %>% scroll_box(width = "100%")
 ```
+## Functions {.tabset}
+### `read_sapflow_file()` {.tabset .tabset-fade .tabset-pills}
 
-## Using `read_sapflow_file()` {.tabset}
-
-### Running it
+#### Example
 
 ```{r}
-library(compasstools)
-library(DT)
 dat1 <- read_sapflow_file(fn)
-DT::datatable(dat1)
+kable(dat1) %>% kable_styling("striped") %>% scroll_box(width = "100%")
 ```
 
-### Code
+#### Function Code 
 
 ```{r}
 print(read_sapflow_file)
 ```
 
-## Using `process_sapflow_dir()` {.tabset}
+### `process_sapflow_dir()` {.tabset .tabset-fade .tabset-pills}
 
-### Running it
+#### Example
 
 ```{r}
 td <- tempdir()
 newfile <- file.path(td, "sapflow.dat")
 writeLines(dat_raw, con = newfile)
 dat2 <- process_sapflow_dir(td, tz = "EST")
-DT::datatable(dat2)
+kable(head(dat2)) %>% kable_styling("striped") %>% scroll_box(width = "100%")
 ```
 
-### Code
+#### Function Code
 
 ```{r}
 print(read_sapflow_file)
 ```
+
+## Joining with Metadata
+
+We have an inventory file that includes site and location information about the sensors...
+
+```{r}
+inventory <- read_csv("sapflow_inventory copy.csv")
+
+DT::datatable(inventory)
+```
+
+... and it gets joined with our dataframe to produce a Level 0 dataset
+```{r}
+sapflow_l0 <- dat2 %>% left_join(inventory, by = c("Logger", "Port"))
+kable(head(sapflow_l0)) %>% kable_styling("striped") %>% scroll_box(width = "100%")
+```
+
