@@ -22,8 +22,11 @@ fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
 dat_raw <- readLines(fn)
 kable(dat_raw) %>% scroll_box(width = "100%")
 ```
+
 ## Functions {.tabset}
 ### `read_sapflow_file()` {.tabset .tabset-fade .tabset-pills}
+
+The `read_sapflow_file` function reads a raw sapflow file, returning it as a data frame with minimal processing (the logger ID is extracted from the header and added as a column, but nothing else).
 
 #### Example
 
@@ -39,6 +42,8 @@ print(read_sapflow_file)
 ```
 
 ### `process_sapflow_dir()` {.tabset .tabset-fade .tabset-pills}
+
+The `process_sapflow_dir` function reads a folder of one or more raw sapflow files, returning them concatenated into a single data frame. The "Timestamp" column is parsed into a 'real' timestamp (i.e., `PosixCT` with time zone), and the data are reshaped into a long form with one observation per row.
 
 #### Example
 
@@ -66,7 +71,8 @@ inventory <- read_csv("sapflow_inventory copy.csv")
 DT::datatable(inventory)
 ```
 
-... and it gets joined with our dataframe to produce a Level 0 dataset
+... and it gets joined with our dataframe to produce a Level 0 dataset.
+
 ```{r}
 sapflow_l0 <- dat2 %>% left_join(inventory, by = c("Logger", "Port"))
 kable(head(sapflow_l0)) %>% kable_styling("striped") %>% scroll_box(width = "100%")
