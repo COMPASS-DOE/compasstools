@@ -14,26 +14,38 @@ library(knitr)
 library(kableExtra)
 library(tidyr)
 library(dplyr)
+library(DT)
 ```
 
 ## Read the data
 
+The **plot data** provides treatment/plot/individual information based on `design_link`.
+
 ```{r}
 plot_data <- read_csv("plot_names.csv", show_col_types = FALSE)
-kable(plot_data) %>% kable_styling()
+datatable(plot_data) %>% 
+    formatStyle("design_link", color = "red") %>% 
+    formatStyle("logger", color = "green")
 ```
+
+The **design data** links loggernet variables with their design as specified in the plot table.
 
 ```{r}
 design_data <- read_csv("design_document.csv", show_col_types = FALSE)
-kable(design_data) %>% kable_styling()
+datatable(design_data) %>%
+    formatStyle("design_link", color = "red") %>%
+    formatStyle("loggernet_variable", color = "blue")
 ```
+
+The **logger data** is downloaded from the logger. 
 
 ```{r}
 logger_data <- read_csv("logger_data.csv", show_col_types = FALSE)
-kable(logger_data) %>% kable_styling()
+datatable(logger_data) %>%
+    formatStyle("logger", color = "green")
 ```
 
-## Reshape data and join with design info
+## Reshape logger data and join with design info
 
 ```{r}
 logger_data %>% 
