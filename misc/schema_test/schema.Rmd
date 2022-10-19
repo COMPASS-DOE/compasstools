@@ -1,0 +1,65 @@
+---
+title: "super simple schema"
+author: "BBL"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(knitr)
+library(kableExtra)
+library(tidyr)
+library(dplyr)
+```
+
+## Read the data
+
+```{r}
+plot_data <- read_csv("plot_names.csv", show_col_types = FALSE)
+kable(plot_data) %>% kable_styling()
+```
+
+```{r}
+design_data <- read_csv("design_document.csv", show_col_types = FALSE)
+kable(design_data) %>% kable_styling()
+```
+
+```{r}
+logger_data <- read_csv("logger_data.csv", show_col_types = FALSE)
+kable(logger_data) %>% kable_styling()
+```
+
+## Reshape data and join with design info
+
+```{r}
+logger_data %>% 
+    pivot_longer(c(-logger, -timestamp), names_to = "loggernet_variable") %>%
+    left_join(select(design_data, loggernet_variable, design_link, research_name),
+              by = "loggernet_variable") ->
+    dat1
+kable(dat1) %>% kable_styling()
+```
+
+## Join with plot data
+
+```{r}
+dat1 %>% 
+    left_join(plot_data, by = c("logger", "design_link")) ->
+    dat2
+kable(dat2) %>% kable_styling()
+```
+
+## Reshape for final output
+
+```{r}
+ dat2 %>% 
+    select(-design_link, -loggernet_variable) %>% 
+    pivot_wider(names_from = "research_name", values_from = "value") %>% 
+    kable() %>% kable_styling()
+```
+
+

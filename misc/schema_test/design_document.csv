@@ -1,0 +1,7 @@
+loggernet_variable,scale_type,design_link,var_norm_split,research_name
+RH(1),site,logger,n,RH
+sapflux(1),plot,S11,y,sapflux
+sapflux(2),plot,S12,y,sapflux
+sapflux(3),plot,S13,y,sapflux
+sapflux(4),plot,S14,y,sapflux
+timestamp,site,logger,n,timestamp

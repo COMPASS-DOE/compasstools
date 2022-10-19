@@ -73,7 +73,7 @@ DT::datatable(inventory)
 
 ... and it gets joined with our dataframe to produce a Level 0 dataset.
 
-```{r}
+```{r, results="asis"}
 sapflow_l0 <- dat2 %>% left_join(inventory, by = c("Logger", "Port"))
 kable(head(sapflow_l0)) %>% kable_styling("striped") %>% scroll_box(width = "100%")
 ```
