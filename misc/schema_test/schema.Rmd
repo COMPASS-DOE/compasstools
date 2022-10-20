@@ -10,8 +10,6 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
-library(knitr)
-library(kableExtra)
 library(tidyr)
 library(dplyr)
 library(DT)
@@ -19,7 +17,7 @@ library(DT)
 
 ## Read the data
 
-The **plot data** provides treatment/plot/individual information based on `design_link`.
+The **plot table** provides treatment/plot/individual information based on `design_link`.
 
 ```{r}
 plot_data <- read_csv("plot_names.csv", show_col_types = FALSE)
@@ -28,7 +26,7 @@ datatable(plot_data) %>%
     formatStyle("logger", color = "green")
 ```
 
-The **design data** links loggernet variables with their design as specified in the plot table.
+The **design table** links logger variables with their design (as specified in the plot table).
 
 ```{r}
 design_data <- read_csv("design_document.csv", show_col_types = FALSE)
@@ -37,7 +35,7 @@ datatable(design_data) %>%
     formatStyle("loggernet_variable", color = "blue")
 ```
 
-The **logger data** is downloaded from the logger. 
+The **logger data table** is downloaded from the logger. 
 
 ```{r}
 logger_data <- read_csv("logger_data.csv", show_col_types = FALSE)
@@ -53,7 +51,7 @@ logger_data %>%
     left_join(select(design_data, loggernet_variable, design_link, research_name),
               by = "loggernet_variable") ->
     dat1
-kable(dat1) %>% kable_styling()
+datatable(dat1)
 ```
 
 ## Join with plot data
@@ -62,7 +60,7 @@ kable(dat1) %>% kable_styling()
 dat1 %>% 
     left_join(plot_data, by = c("logger", "design_link")) ->
     dat2
-kable(dat2) %>% kable_styling()
+datatable(dat2)
 ```
 
 ## Reshape for final output
@@ -71,7 +69,7 @@ kable(dat2) %>% kable_styling()
  dat2 %>% 
     select(-design_link, -loggernet_variable) %>% 
     pivot_wider(names_from = "research_name", values_from = "value") %>% 
-    kable() %>% kable_styling()
+    datatable()
 ```
 
 
