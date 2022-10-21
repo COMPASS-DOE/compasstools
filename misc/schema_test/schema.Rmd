@@ -66,10 +66,33 @@ datatable(dat2)
 ## Reshape for final output
 
 ```{r}
- dat2 %>% 
+dat2 %>% 
     select(-design_link, -loggernet_variable) %>% 
     pivot_wider(names_from = "research_name", values_from = "value") %>% 
     datatable()
 ```
 
+## A little test
+
+```{r, include=FALSE}
+test <- tibble(x = c("sapflux(1)", "sapflux(2:3)", "logger", "sapflux(4:6)"))
+PATTERN <- "([[:digit:]]+:[[:digit:]]+)"
+matches <- regexpr(PATTERN, test$x)
+strings <- strsplit(regmatches(test$x, matches), ":")
+seqs <- lapply(strings, function(x) seq(x[1], x[2]))
+
+m <- 0
+results <- list()
+for(i in seq_along(matches)) {
+    if(matches[i] <= 0) {
+        results[[i]] <- test[i,]
+    } else {
+        m <- m + 1
+        results[[i]] <- test[rep(i, length(seqs[[m]])),]
+        results[[i]]$x <- stringr::str_replace(results[[i]]$x, PATTERN, as.character(seqs[[m]]))
+    }
+}
+
+
+```
 
