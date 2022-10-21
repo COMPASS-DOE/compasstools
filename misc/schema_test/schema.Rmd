@@ -15,64 +15,6 @@ library(dplyr)
 library(DT)
 ```
 
-## Read the data
-
-The **plot table** provides treatment/plot/individual information based on `design_link`.
-
-```{r}
-plot_data <- read_csv("plot_names.csv", show_col_types = FALSE)
-datatable(plot_data) %>% 
-    formatStyle("design_link", color = "red") %>% 
-    formatStyle("logger", color = "green")
-```
-
-The **design table** links logger variables with their design (as specified in the plot table).
-
-```{r}
-design_data <- read_csv("design_document.csv", show_col_types = FALSE)
-datatable(design_data) %>%
-    formatStyle("design_link", color = "red") %>%
-    formatStyle("loggernet_variable", color = "blue")
-```
-
-The **logger data table** is downloaded from the logger. 
-
-```{r}
-logger_data <- read_csv("logger_data.csv", show_col_types = FALSE)
-datatable(logger_data) %>%
-    formatStyle("logger", color = "green")
-```
-
-## Reshape logger data and join with design info
-
-```{r}
-logger_data %>% 
-    pivot_longer(c(-logger, -timestamp), names_to = "loggernet_variable") %>%
-    left_join(select(design_data, loggernet_variable, design_link, research_name),
-              by = "loggernet_variable") ->
-    dat1
-datatable(dat1)
-```
-
-## Join with plot data
-
-```{r}
-dat1 %>% 
-    left_join(plot_data, by = c("logger", "design_link")) ->
-    dat2
-datatable(dat2)
-```
-
-## Reshape for final output
-
-```{r}
-dat2 %>% 
-    select(-design_link, -loggernet_variable) %>% 
-    pivot_wider(names_from = "research_name", values_from = "value") %>% 
-    datatable()
-```
-
-## A little test
 
 ```{r, include=FALSE}
 
@@ -98,7 +40,7 @@ expand_string <- function(s, p = "([A-Za-z0-9_]+,)+[A-Za-z0-9_]+") {
 expand_df <- function(df) {
     results <- list()
     for(i in seq_len(nrow(df))) {
-        dfr <- test[i,]  # row we're working on
+        dfr <- df[i,]  # row we're working on
         # Figure out max expansion (may be 1) and replicate row that many times
         expand_lens <- sapply(dfr, function(x) length(expand_string(x)))
         new_df <- dfr[rep(1, max(expand_lens)),]
@@ -121,6 +63,81 @@ expand_df <- function(df) {
     bind_rows(results)
 }
 ```
+
+## Read the data
+
+The **logger data table** is downloaded from the logger. 
+
+```{r}
+library(compasstools)
+logger_data <- read_sapflow_file("Compass_CRC_TR_302_SapflowB.dat") %>%
+    head() %>% select(1:10) %>% 
+    mutate(Logger = "CRC_TR_302") # faking it
+
+datatable(logger_data) %>%
+    formatStyle("Logger", color = "green")
+```
+
+The **plot table** provides treatment/plot/individual information based on `design_link`.
+
+```{r}
+plot_table <- read_csv("plot_table.csv", show_col_types = FALSE)
+datatable(plot_table) %>% 
+    formatStyle("design_link", color = "red") %>% 
+    formatStyle("Logger", color = "green")
+```
+
+Note that I'm using "comma notation" here in the plot table, so expand it before continuing:
+
+```{r}
+plot_data_ex <- expand_df(plot_data)
+datatable(plot_data_ex) %>% 
+    formatStyle("design_link", color = "red") %>% 
+    formatStyle("Logger", color = "green")
+```
+
+The **design table** links logger variables with their design (as specified in the plot table).
+
+```{r}
+design_table <- read_csv("design_table.csv", show_col_types = FALSE)
+datatable(design_table) %>%
+    formatStyle("design_link", color = "red") %>%
+    formatStyle("loggernet_variable", color = "blue") %>% 
+    formatStyle("scale_type", color = "lightgrey")
+```
+
+
+## Reshape logger data and join with design info
+
+```{r}
+logger_data %>% 
+    pivot_longer(c(-Logger, -Timestamp), names_to = "loggernet_variable") %>%
+    left_join(select(design_table, loggernet_variable, design_link, research_name),
+              by = "loggernet_variable") %>% 
+    filter(!is.na(design_link)) ->  # in a real pipeline we'd error if not found
+    dat1
+datatable(dat1)
+```
+
+## Join with plot data
+
+```{r}
+dat1 %>% 
+    left_join(plot_table, by = c("Logger", "design_link")) ->
+    dat2
+datatable(dat2)
+```
+
+## Reshape for final output
+
+```{r}
+dat2 %>% 
+    select(-design_link, -loggernet_variable) %>% 
+    pivot_wider(names_from = "research_name", values_from = "value") %>% 
+    datatable()
+```
+
+## A little test
 
 Define a test data frame:
 

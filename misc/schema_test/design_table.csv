@@ -1,0 +1,7 @@
+loggernet_variable,scale_type,design_link,research_name
+BattV_Avg,site,logger,voltage
+DiffVolt_Avg(1),plot,S11,sapflux
+DiffVolt_Avg(2),plot,S12,sapflux
+DiffVolt_Avg(3),plot,S13,sapflux
+DiffVolt_Avg(4),plot,S14,sapflux
+Timestamp,site,logger,timestamp

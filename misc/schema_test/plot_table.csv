@@ -1,0 +1,5 @@
+plot,tree,Logger,design_link,note
+transition,807,CRC_TR_302,"S1,S1deep,logger",The two S1 sensors + logger flow to 807
+transition,808,CRC_TR_302,"S2,S2deep,logger",
+transition,809,CRC_TR_302,"S3,logger",no deep sensor
+transition,810,CRC_TR_302,"S4,logger",no deep sensor
