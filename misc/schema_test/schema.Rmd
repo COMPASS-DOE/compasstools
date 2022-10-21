@@ -75,24 +75,37 @@ dat2 %>%
 ## A little test
 
 ```{r, include=FALSE}
-test <- tibble(x = c("sapflux(1)", "sapflux(2:3)", "logger", "sapflux(4:6)"))
-PATTERN <- "([[:digit:]]+:[[:digit:]]+)"
-matches <- regexpr(PATTERN, test$x)
-strings <- strsplit(regmatches(test$x, matches), ":")
-seqs <- lapply(strings, function(x) seq(x[1], x[2]))
 
-m <- 0
-results <- list()
-for(i in seq_along(matches)) {
-    if(matches[i] <= 0) {
-        results[[i]] <- test[i,]
-    } else {
-        m <- m + 1
-        results[[i]] <- test[rep(i, length(seqs[[m]])),]
-        results[[i]]$x <- stringr::str_replace(results[[i]]$x, PATTERN, as.character(seqs[[m]]))
+PATTERN <- "([[:alnum:]]+,)+[[:alnum:]]+"
+expand_string <- function(s) {
+    matches <- regexpr(PATTERN, s)
+    
+    if(matches > 0) {
+        subs <- strsplit(regmatches(s, matches), ",")[[1]]
+        s <- rep(s, length(subs))
+        newmatches <- regexpr(PATTERN, s)
+        regmatches(s, newmatches) <- subs
     }
+    s
 }
 
+test <- tribble(~x,               ~y,
+                "sapflux(1)",     "y1",
+                "sapflux(2,3)",   "y2a,y2b",
+                "logger",         "y3",
+                "logger,S11,S12", "y4")
 
+results <- list()
+for(i in seq_len(nrow(test))) {
+    message(i)
+    df <- test[i,]
+    newx <- expand_string(df$x)
+    df <- df[rep(1, length(newx)),]
+    df$x <- newx
+    df$y <- expand_string(df$y[1])
+    results[[i]] <- df
+}
+
+bind_rows(results)
 ```
 
