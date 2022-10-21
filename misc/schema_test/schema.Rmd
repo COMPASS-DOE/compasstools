@@ -112,7 +112,7 @@ expand_df <- function(df) {
         # For each column, expand its entry string as needed 
         if(nrow(new_df) > 1) {
             for(col in seq_along(new_df)) {
-                new_df[col] <- expand_string(new_df[[1,col]])
+                new_df[col] <- expand_string(new_df[[1, col]])
             }    
         }
         results[[i]] <- new_df
@@ -130,7 +130,7 @@ test <- tribble(~x,               ~y,          ~comment,
                 "logger,S11,S12", "y2",        "x expands, y replicates",
                 "logger",         "y3a,y3b",   "y expands, x replicates",
                 "sapflux(2,3)",   "y4a,y4b",   "x and y (same length) both expand"
-                #               "sapflux(2,3,4)", "y4a,y4b",   "this would cause a mismatch error"
+#               "sapflux(2,3,4)", "y4a,y4b",   "this would cause a mismatch error"
 )
 datatable(test)
 ```
