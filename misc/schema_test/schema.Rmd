@@ -29,7 +29,7 @@ expand_string <- function(s, p = "([A-Za-z0-9_]+,)+[A-Za-z0-9_]+") {
         subs <- strsplit(regmatches(s, matches), ",")[[1]]
         s <- rep(s, length(subs))
         newmatches <- regexpr(p, s)
-        regmatches(s, newmatches) <- subs
+        regmatches(s, newmatches) <- trimws(subs)
     }
     s
 }
@@ -64,15 +64,20 @@ expand_df <- function(df) {
 }
 ```
 
+## Setup
+
+Let's say we have one site (Crane Creek), and two plot (transition and upland).
+Each plot has a datalogger monitoring two trees, one with a deep sensor, as well
+as soil moisture.
+There's also a met datalogger for the entire site that measures PAR.
+
 ## Read the data
 
 The **logger data table** is downloaded from the logger. 
 
 ```{r}
 library(compasstools)
-logger_data <- read_sapflow_file("Compass_CRC_TR_302_SapflowB.dat") %>%
-    head() %>% select(1:10) %>% 
-    mutate(Logger = "CRC_TR_302") # faking it
+logger_data <- read_csv("logger_data.csv", show_col_types = FALSE)
 
 datatable(logger_data) %>%
     formatStyle("Logger", color = "green")

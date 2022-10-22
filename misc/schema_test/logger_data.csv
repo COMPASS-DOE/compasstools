@@ -1,4 +1,10 @@
-timestamp,logger,RH(1),sapflux(1),sapflux(2),sapflux(3),sapflux(4)
+Timestamp,Logger,BattV_Avg,DiffVoltB_Avg(1),DiffVoltB_Avg(2),DiffVoltB_Avg(3),DiffVoltB_Avg(4)
 1,COMPASS_CRC_TR_302,1.0,1.1,1.2,1.3,1.4
 2,COMPASS_CRC_TR_302,2.0,2.1,2.2,2.3,2.4
 3,COMPASS_CRC_TR_302,3.0,3.1,3.2,3.3,3.4
+1,COMPASS_CRC_UP_301,11,11.1,11.2,11.3,11.4
+2,COMPASS_CRC_UP_301,12,12.1,12.2,12.3,12.4
+3,COMPASS_CRC_UP_301,13,13.1,13.2,13.3,13.4
+1,COMPASS_CRC_300,21,21.1,,,
+2,COMPASS_CRC_300,22,22.1,,,
+3,COMPASS_CRC_300,23,23.1,,,
