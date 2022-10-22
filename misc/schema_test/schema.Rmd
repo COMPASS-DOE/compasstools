@@ -22,7 +22,7 @@ library(DT)
 # larger string, and break them apart at the commas
 # So "Hello test,apple2,my_fun" -> 
 # c("Hello test", "Hello apple2", "Hello my_fun")
-expand_string <- function(s, p = "([A-Za-z0-9_]+,)+[A-Za-z0-9_]+") {
+expand_string <- function(s, p = "(\\w+,)+\\w+") {
     matches <- regexpr(p, s)
     
     if(matches > 0) {
@@ -66,10 +66,12 @@ expand_df <- function(df) {
 
 ## Setup
 
-Let's say we have one site (Crane Creek), and two plot (transition and upland).
-Each plot has a datalogger monitoring two trees, one with a deep sensor, as well
+Let's say we have one site (Crane Creek) with one plot.
+The plot has a datalogger monitoring two trees, one with a deep sensor, as well
 as soil moisture.
-There's also a met datalogger for the entire site that measures PAR.
+
+![](cc_plot.png)
+
 
 ## Read the data
 
@@ -89,16 +91,17 @@ The **plot table** provides treatment/plot/individual information based on `desi
 plot_table <- read_csv("plot_table.csv", show_col_types = FALSE)
 datatable(plot_table) %>% 
     formatStyle("design_link", color = "red") %>% 
-    formatStyle("Logger", color = "green")
+    formatStyle("logger", color = "green")
 ```
 
-Note that I'm using "comma notation" here in the plot table, so expand it before continuing:
+Note that I'm using "comma notation" here in the plot table, so we expand it
+before continuing:
 
 ```{r}
-plot_data_ex <- expand_df(plot_data)
-datatable(plot_data_ex) %>% 
+plot_table_ex <- expand_df(plot_table)
+datatable(plot_table_ex) %>% 
     formatStyle("design_link", color = "red") %>% 
-    formatStyle("Logger", color = "green")
+    formatStyle("logger", color = "green")
 ```
 
 The **design table** links logger variables with their design (as specified in the plot table).
@@ -116,6 +119,8 @@ datatable(design_table) %>%
 
 ```{r}
 logger_data %>% 
+    # NOTE: I'm handling Timestamp different from everything else, as otherwise
+    # the pivot_wider below fails; check with SC
     pivot_longer(c(-Logger, -Timestamp), names_to = "loggernet_variable") %>%
     left_join(select(design_table, loggernet_variable, design_link, research_name),
               by = "loggernet_variable") %>% 
@@ -128,7 +133,8 @@ datatable(dat1)
 
 ```{r}
 dat1 %>% 
-    left_join(plot_table, by = c("Logger", "design_link")) ->
+    left_join(plot_table_ex, by = c("Logger" = "logger", "design_link")) %>% 
+    select(-Logger, -note) ->
     dat2
 datatable(dat2)
 ```

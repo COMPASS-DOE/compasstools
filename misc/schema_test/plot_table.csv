@@ -1,5 +1,3 @@
-plot,tree,design_link,note
-transition,807,"S807, S807deep, logger_tr, logger_met",Two S807 sensors + tr logger + met logger
-transition,808,"S808, logger_tr,logger_met",no deep sensor
-upland,809,"S809, S809deep, logger_up, logger_met",Two S809 sensors + up logger + met logger
-upland,810,"S810, logger_up, logger_met",no deep sensor
+plot,tree,logger,design_link,note
+transition,807,COMPASS_CRC_TR_302,"S807,S807deep,sm_tr,logger",Two S807 sensors + sm + logger
+transition,808,COMPASS_CRC_TR_302,"S808,sm_tr,logger",no deep sensor
