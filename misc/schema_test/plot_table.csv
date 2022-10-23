@@ -1,3 +1,3 @@
 plot,tree,logger,design_link,note
-transition,807,COMPASS_CRC_TR_302,"S807,S807deep,sm_tr,logger",Two S807 sensors + sm + logger
-transition,808,COMPASS_CRC_TR_302,"S808,sm_tr,logger",no deep sensor
+transition,807,COMPASS_CRC_TR_302,"S807, sm_tr, logger",Two S807 sensors + sm + logger
+transition,808,COMPASS_CRC_TR_302,"S808, sm_tr, logger",no deep sensor

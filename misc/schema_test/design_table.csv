@@ -1,7 +1,7 @@
 loggernet_variable,scale_type,design_link,research_name
-Timestamp,plot,logger,timestamp
-BattV_Avg,site,logger,voltage
-DiffVoltB_Avg(1),plot,S807,sapflux
-DiffVoltB_Avg(2),plot,S807deep,sapflux_deep
-DiffVoltB_Avg(3),plot,S808,sapflux
+Timestamp,logger,logger,timestamp
+BattV_Avg,logger,logger,voltage
+DiffVoltB_Avg(1),sensor,S807,sapflux
+DiffVoltB_Avg(2),sensor,S807,sapflux_deep
+DiffVoltB_Avg(3),sensor,S808,sapflux
 DiffVoltB_Avg(4),plot,sm_tr,sm
