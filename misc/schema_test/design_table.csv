@@ -1,7 +1,10 @@
-loggernet_variable,scale_type,design_link,research_name
-Timestamp,logger,logger,timestamp
-BattV_Avg,logger,logger,voltage
-DiffVoltB_Avg(1),sensor,S807,sapflux
-DiffVoltB_Avg(2),sensor,S807,sapflux_deep
-DiffVoltB_Avg(3),sensor,S808,sapflux
-DiffVoltB_Avg(4),plot,sm_tr,sm
+Logger,loggernet_variable,scale_type,design_link,research_name
+COMPASS_CRC_TR_302,Timestamp,logger,logger,timestamp
+COMPASS_CRC_TR_302,BattV_Avg,logger,logger,voltage
+COMPASS_CRC_TR_302,DiffVoltB_Avg(1),sensor,S807,sapflux
+COMPASS_CRC_TR_302,DiffVoltB_Avg(2),sensor,S807,sapflux_deep
+COMPASS_CRC_TR_302,DiffVoltB_Avg(3),sensor,S808,sapflux
+COMPASS_CRC_TR_302,DiffVoltB_Avg(4),plot,sm_tr,sm
+COMPASS_CRC_TR_300,Timestamp,logger,logger,timestamp
+COMPASS_CRC_TR_300,BattV_Avg,logger,logger,voltage
+COMPASS_CRC_TR_300,DiffVoltB_Avg(1),sensor,par_tr,PAR

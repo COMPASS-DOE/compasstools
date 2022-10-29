@@ -144,8 +144,8 @@ datatable(logger_data) %>%
 
 ```{r}
 logger_data %>% 
-    # NOTE: I'm handling Timestamp different from everything else, as otherwise
-    # the pivot_wider below fails; check with SC
+    # Logger and Timestamp are 'magic fields' that always travel with data,
+    # so we handle them differently
     pivot_longer(c(-Logger, -Timestamp), names_to = "loggernet_variable") %>%
     left_join(design_table, by = "loggernet_variable") %>% 
     select(-scale_type) %>% 
