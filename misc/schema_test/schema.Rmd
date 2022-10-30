@@ -1,5 +1,5 @@
 ---
-title: "Simple schema"
+title: "Less simple schema"
 author: "BBL"
 date: "`r Sys.Date()`"
 output: 
@@ -27,27 +27,30 @@ library(DT)
 expand_string <- function(s, expand_comma = TRUE, expand_colon = TRUE) {
     # Look for 1+ "words" (letters, digits, underscores, possibly with a colon)
     # followed by commas (and perhaps white space), and then a final word
-    COMMA_PATTERN <- "(\\w+:?\\w*,\\s*)+\\w+:?\\w*"
-    matches <- regexpr(COMMA_PATTERN, s)
-    if(expand_comma && matches > 0) {
-        subs <- strsplit(regmatches(s, matches), ",")[[1]]
-        s <- rep(s, length(subs))
-        newmatches <- regexpr(COMMA_PATTERN, s)
-        regmatches(s, newmatches) <- trimws(subs)
-        # Recurse once to look for possible colon expansions
-        s <- unlist(sapply(s, expand_string, expand_comma = FALSE, USE.NAMES = FALSE))
+    if(expand_comma) {
+        COMMA_PATTERN <- "(\\w+:?\\w*,\\s*)+\\w+:?\\w*"
+        matches <- regexpr(COMMA_PATTERN, s)
+        if(matches > 0) {
+            subs <- strsplit(regmatches(s, matches), ",")[[1]]
+            s <- rep(s, length(subs))
+            newmatches <- regexpr(COMMA_PATTERN, s)
+            regmatches(s, newmatches) <- trimws(subs)
+            # Recurse once to look for possible colon expansions
+            s <- unlist(sapply(s, expand_string, expand_comma = FALSE, USE.NAMES = FALSE))
+        }
+    } else if(expand_colon) {
+        # Look for two numbers separated by a colon, with optional white space 
+        COLON_PATTERN <- "\\d+\\s*:\\s*\\d+"
+        matches <- regexpr(COLON_PATTERN, s)
+        if(matches > 0) {
+            subs <- strsplit(regmatches(s, matches), ":")[[1]]
+            subs <- seq.int(from = subs[1], to = subs[2])
+            s <- rep(s, length(subs))
+            newmatches <- regexpr(COLON_PATTERN, s)
+            regmatches(s, newmatches) <- subs
+        }
     }
-   
-    # Look for two numbers separated by a colon, with optional white space 
-    COLON_PATTERN <- "\\d+\\s*:\\s*\\d+"
-    matches <- regexpr(COLON_PATTERN, s)
-    if(expand_colon && matches > 0) {
-        subs <- strsplit(regmatches(s, matches), ":")[[1]]
-        subs <- seq.int(from = subs[1], to = subs[2])
-        s <- rep(s, length(subs))
-        newmatches <- regexpr(COLON_PATTERN, s)
-        regmatches(s, newmatches) <- subs
-    }
+    
     s
 }
 
@@ -85,7 +88,7 @@ expand_df <- function(df) {
 
 Let's say we have one site (Crane Creek) with one plot.
 The plot has a datalogger monitoring two trees, one with a deep sensor, as well
-as soil moisture.
+as soil moisture. There's also a separate datalogger monitoring PAR.
 
 ![](cc_plot.png)
 
@@ -95,6 +98,7 @@ The data flow for this setup looks like this:
 
 Notice that the data flows for soil moisture, timestamp, and battery voltage 
 are **one-to-many**: they are _plot level_ and so go to all trees' data.
+The PAR datalogger is _site level_ and goes to all plots.
 
 ## Read the data
 
@@ -104,8 +108,7 @@ and provides treatment/plot/individual information .
 ```{r}
 plot_table <- read_csv("plot_table.csv", show_col_types = FALSE)
 datatable(plot_table) %>% 
-    formatStyle("design_link", color = "red") %>% 
-    formatStyle("logger", color = "green")
+    formatStyle("design_link", color = "red")
 ```
 
 Note that this plot table uses "comma notation", so expand it
@@ -114,8 +117,7 @@ before continuing:
 ```{r}
 plot_table_ex <- expand_df(plot_table)
 datatable(plot_table_ex) %>% 
-    formatStyle("design_link", color = "red") %>% 
-    formatStyle("logger", color = "green")
+    formatStyle("design_link", color = "red")
 ```
 
 The **design table** links logger variables with their `design_link`
@@ -129,13 +131,16 @@ datatable(design_table) %>%
     formatStyle("loggernet_variable", color = "blue")
 ```
 
-Finally, the **logger data table** is downloaded from the logger.
+Finally, the two **logger data tables** are downloaded from the logger.
 
 ```{r}
 library(compasstools)
-logger_data <- read_csv("logger_data.csv", show_col_types = FALSE)
+logger_data1 <- read_csv("logger_data300.csv", show_col_types = FALSE)
+datatable(logger_data1) %>%
+    formatStyle("Logger", color = "green")
 
-datatable(logger_data) %>%
+logger_data2 <- read_csv("logger_data302.csv", show_col_types = FALSE)
+datatable(logger_data2) %>%
     formatStyle("Logger", color = "green")
 ```
 
@@ -143,11 +148,14 @@ datatable(logger_data) %>%
 ## Reshape logger data and join with design info
 
 ```{r}
-logger_data %>% 
-    # Logger and Timestamp are 'magic fields' that always travel with data,
-    # so we handle them differently
-    pivot_longer(c(-Logger, -Timestamp), names_to = "loggernet_variable") %>%
-    left_join(design_table, by = "loggernet_variable") %>% 
+# Logger and Timestamp are 'magic fields' that always travel with data,
+# so we handle them differently
+ld1 <- pivot_longer(logger_data1, c(-Logger, -Timestamp), names_to = "loggernet_variable")
+ld2 <- pivot_longer(logger_data2, c(-Logger, -Timestamp), names_to = "loggernet_variable")
+
+ld1 %>%
+    bind_rows(ld2) %>% 
+    left_join(design_table, by = c("Logger", "loggernet_variable")) %>% 
     select(-scale_type) %>% 
     filter(!is.na(design_link)) ->  # in a real pipeline we'd error if not found
     dat1
@@ -163,8 +171,8 @@ more than one plot table entry may list a given `design_link`.
 
 ```{r}
 dat1 %>% 
-    left_join(plot_table_ex, by = c("Logger" = "logger", "design_link")) %>% 
-    select(-Logger, -note) ->
+    right_join(plot_table_ex, by = "design_link") %>% 
+    select(-note) ->
     dat2
 datatable(dat2)
 ```
@@ -173,7 +181,7 @@ datatable(dat2)
 
 ```{r}
 dat2 %>% 
-    select(-design_link, -loggernet_variable) %>% 
+    select(-design_link, -loggernet_variable, -Logger) %>% 
     pivot_wider(names_from = "research_name", values_from = "value") %>% 
     datatable()
 ```
@@ -188,7 +196,7 @@ test <- tribble(~x,               ~y,          ~comment,
                 "logger,S11,S12", "y2",        "x expands; y replicates",
                 "logger",         "y3a, y3b",   "y expands; x replicates (space)",
                 "sapflux(2,3)",   "y4a,y4b",   "x and y (same length) both expand",
-#               "sapflux(2,3,4)", "y4a,y4b",   "this would cause a mismatch error",
+                #               "sapflux(2,3,4)", "y4a,y4b",   "this would cause a mismatch error",
                 "sapflux(1:3)",   "a,b,c",     "sequence (colon) expansion",
                 "a,b1:2,c",       "x",         "comma AND colon expansion"
 )

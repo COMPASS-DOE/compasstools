@@ -5,6 +5,6 @@ COMPASS_CRC_TR_302,DiffVoltB_Avg(1),sensor,S807,sapflux
 COMPASS_CRC_TR_302,DiffVoltB_Avg(2),sensor,S807,sapflux_deep
 COMPASS_CRC_TR_302,DiffVoltB_Avg(3),sensor,S808,sapflux
 COMPASS_CRC_TR_302,DiffVoltB_Avg(4),plot,sm_tr,sm
-COMPASS_CRC_TR_300,Timestamp,logger,logger,timestamp
-COMPASS_CRC_TR_300,BattV_Avg,logger,logger,voltage
-COMPASS_CRC_TR_300,DiffVoltB_Avg(1),sensor,par_tr,PAR
+COMPASS_CRC_TR_300,Timestamp,logger,logger_par,timestamp
+COMPASS_CRC_TR_300,BattV_Avg,logger,logger_par,voltage
+COMPASS_CRC_TR_300,DiffVoltB_Avg(1),sensor,par,PAR
