@@ -70,7 +70,7 @@ test_that("expand_df works", {
     # No expansion
     x <- data.frame(x = 1)
     expect_identical(expand_df(x), x)
-    x <- tibble::tibble(x = 1)
+    x <- dplyr::tibble(x = 1)
     expect_identical(expand_df(x), x)
 
     # Comma separator
