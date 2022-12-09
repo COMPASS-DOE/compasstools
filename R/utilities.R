@@ -164,6 +164,7 @@ expand_df <- function(df) {
 #' Scan sub-folders
 #'
 #' @param root_dir Root directory to start from, character
+#' @param file_pattern Regex for files, character
 #' @param quiet Be quiet or print diagnostic messages? Logical
 #'
 #' @return A named list of folder contents; each list object name is the
@@ -174,7 +175,7 @@ expand_df <- function(df) {
 #'
 #' @examples
 #' scan_folders("./")
-scan_folders <- function(root_dir, quiet = TRUE) {
+scan_folders <- function(root_dir, file_pattern = "\\.csv$", quiet = TRUE) {
     if(!dir.exists(root_dir)) {
         stop("Directory doesn't exist!")
     }
@@ -184,7 +185,7 @@ scan_folders <- function(root_dir, quiet = TRUE) {
     for(e in entries) {
         if(!quiet) message(e)
         if(dir.exists(e)) { # it's a folder
-            files <- list.files(e, pattern = "\\.csv$", full.names = TRUE)
+            files <- list.files(e, pattern = file_pattern, full.names = TRUE)
             if(!quiet) message("\t", length(files), " files")
             if(length(files)) {  # ...with csv files!
                 folder_list[[e]] <- files

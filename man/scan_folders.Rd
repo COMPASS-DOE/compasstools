@@ -4,10 +4,12 @@
 \alias{scan_folders}
 \title{Scan sub-folders}
 \usage{
-scan_folders(root_dir, quiet = TRUE)
+scan_folders(root_dir, file_pattern = "\\\\.csv$", quiet = TRUE)
 }
 \arguments{
 \item{root_dir}{Root directory to start from, character}
+
+\item{file_pattern}{Regex for files, character}
 
 \item{quiet}{Be quiet or print diagnostic messages? Logical}
 }

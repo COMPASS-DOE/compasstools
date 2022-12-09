@@ -145,6 +145,9 @@ test_that("scan_folders works", {
     expect_identical(length(z[[2]]), 1L)
     expect_identical(basename(z[[2]]), "test3.csv")
 
+    # Respects file pattern
+    expect_identical(scan_folders(td, file_pattern = "kjb"), list())
+
     # Generates messages with asked
     expect_silent(scan_folders(td, quiet = TRUE))
     suppressMessages({
