@@ -121,9 +121,9 @@ test_that("scan_folders works", {
     x <- scan_folders(td)
     expect_identical(length(x), 1L)
     expect_identical(basename(names(x)), "a")
-    expect_identical(dirname(names(x)), td)
+    expect_identical(normalizePath(dirname(names(x))), normalizePath(td))
     expect_identical(basename(x[[1]]), "test.csv")
-    expect_identical(dirname(x[[1]]), a)
+    expect_identical(normalizePath(dirname(x[[1]])), normalizePath(a))
     # Adding a non-csv file shouldn't change anything
     file.create(file.path(td, "a", "test.png"))
     expect_identical(scan_folders(td), x)
