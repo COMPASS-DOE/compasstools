@@ -213,6 +213,10 @@ scan_folders <- function(root_dir, file_pattern = "\\.csv$", quiet = TRUE) {
 #' y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"))
 #' unit_conversion(x, y)
 unit_conversion <- function(dat, ut, quiet = FALSE) {
+    if(!all(c("research_name", "conversion", "new_unit") %in% names(ut))) {
+        stop("The units table data frame isn't structured correctly")
+    }
+
     dat_conv <- list()
 
     # Isolate the various research_name entries one by one, find corresponding
@@ -229,7 +233,12 @@ unit_conversion <- function(dat, ut, quiet = FALSE) {
         } else if(length(which_ut) == 1) {
             conv <- ut$conversion[which_ut]
             # ...and evaluate it
-            d$value_conv <- eval(parse(text = conv))
+            out <- try(eval(parse(text = conv)))
+            if(is.numeric(out) & length(out) == nrow(d)) {
+                d$value_conv <- out
+            } else {
+                stop("Error evaluating conversion string for research_name ", rn)
+            }
             d$units <- ut$new_unit[which_ut]
         } else {
             stop("Multiple conversions for ", rn)

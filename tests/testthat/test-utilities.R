@@ -159,20 +159,36 @@ test_that("unit_conversion works", {
     x <- data.frame(value = 1:3, research_name = c("a", "a", "b"))
 
     # Empty unit conversion table - should be all NA
-    z <- unit_conversion(x, data.frame(), quiet = TRUE)
+    empty <- data.frame(research_name = "", conversion = "", new_unit = "")
+    z <- unit_conversion(x, empty, quiet = TRUE)
     expect_true(all(is.na(z$value_conv)))
 
     # Empty empty
-    z <- unit_conversion(data.frame(), data.frame())
+    z <- unit_conversion(data.frame(), empty)
     expect_s3_class(z, "data.frame")
     expect_identical(nrow(z), 0L)
 
-    # Throws error with multiple conversions for a research_name
-    y <- data.frame(research_name = c("a", "a"), conversion = c("x * 1", "(x * 2) - 1"))
+    # Bad units table
+    expect_error(unit_conversion(x, cars), regexp = "isn't structured correctly")
+
+    # Multiple conversions for a research_name
+    y <- data.frame(research_name = c("a", "a"), conversion = c("x * 1", "(x * 2) - 1"), new_unit = "")
     expect_error(unit_conversion(x, y), regexp = "Multiple conversions")
 
+    # Error in conversion string
+    # Suppress the output
+    f <- file(tempfile(), "a")
+    sink(f, type = "message")
+    # evaluation error
+    y <- data.frame(research_name = c("a", "b"), conversion = c(" * 1", "(x * 2) - 1"), new_unit = "")
+    expect_error(unit_conversion(x, y), regexp = "Error evaluating conversion string")
+    # tries to return non-numeric
+    y <- data.frame(research_name = c("a", "b"), conversion = c("cars", "(x * 2) - 1"), new_unit = "")
+    expect_error(unit_conversion(x, y), regexp = "Error evaluating conversion string")
+    #  sink() # Seems like testthat removes the sink
+
     # Respects quiet
-    y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"))
+    y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"), new_unit = "")
     expect_silent(unit_conversion(x, y, quiet = TRUE))
 })
 
