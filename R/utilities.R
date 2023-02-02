@@ -195,3 +195,49 @@ scan_folders <- function(root_dir, file_pattern = "\\.csv$", quiet = TRUE) {
 
     return(folder_list)
 }
+
+
+
+#' Perform unit conversion based on a data frame of data and units table
+#'
+#' @param dat Data frame with \code{research_name} and \code{value} columns
+#' @param ut Data frame with \code{research_name}, \code{conversion}, and \code{new_unit} columns
+#' @param quiet Print progress messages?
+#'
+#' @return The data frame with new columns \code{value_conv} and \code{units}.
+#' @export
+#' @importFrom dplyr bind_rows
+#'
+#' @examples
+#' x <- data.frame(value = 1:3, research_name = c("a", "a", "b"))
+#' y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"))
+#' unit_conversion(x, y)
+unit_conversion <- function(dat, ut, quiet = FALSE) {
+    dat_conv <- list()
+
+    # Isolate the various research_name entries one by one, find corresponding
+    # conversion string, evaluate it against the `value` data column
+    for(rn in unique(dat$research_name)) {
+        d <- dat[dat$research_name == rn,] # filter
+        x <- d$value # this `x` name is crucial; used by conversion strings
+        which_ut <- which(ut$research_name == rn)
+        # Isolate conversion string
+        if(length(which_ut) == 0) {
+            conv <- "<not found>"
+            d$value_conv <- NA_real_
+            d$units <- NA_character_
+        } else if(length(which_ut) == 1) {
+            conv <- ut$conversion[which_ut]
+            # ...and evaluate it
+            d$value_conv <- eval(parse(text = conv))
+            d$units <- ut$new_unit[which_ut]
+        } else {
+            stop("Multiple conversions for ", rn)
+        }
+
+        if(!quiet) message("\t\tUC: ", rn, " n=", nrow(d), ", conv=", conv)
+
+        dat_conv[[rn]] <- d
+    }
+    bind_rows(dat_conv)
+}

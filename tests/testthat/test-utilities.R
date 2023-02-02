@@ -154,3 +154,25 @@ test_that("scan_folders works", {
         expect_message(scan_folders(td, quiet = FALSE), "files")
     })
 })
+
+test_that("unit_conversion works", {
+    x <- data.frame(value = 1:3, research_name = c("a", "a", "b"))
+
+    # Empty unit conversion table - should be all NA
+    z <- unit_conversion(x, data.frame(), quiet = TRUE)
+    expect_true(all(is.na(z$value_conv)))
+
+    # Empty empty
+    z <- unit_conversion(data.frame(), data.frame())
+    expect_s3_class(z, "data.frame")
+    expect_identical(nrow(z), 0L)
+
+    # Throws error with multiple conversions for a research_name
+    y <- data.frame(research_name = c("a", "a"), conversion = c("x * 1", "(x * 2) - 1"))
+    expect_error(unit_conversion(x, y), regexp = "Multiple conversions")
+
+    # Respects quiet
+    y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"))
+    expect_silent(unit_conversion(x, y, quiet = TRUE))
+})
+
