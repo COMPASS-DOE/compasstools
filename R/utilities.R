@@ -210,7 +210,7 @@ scan_folders <- function(root_dir, file_pattern = "\\.csv$", quiet = TRUE) {
 #'
 #' @examples
 #' x <- data.frame(value = 1:3, research_name = c("a", "a", "b"))
-#' y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"))
+#' y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"), new_unit = "")
 #' unit_conversion(x, y)
 unit_conversion <- function(dat, ut, quiet = FALSE) {
     if(!all(c("research_name", "conversion", "new_unit") %in% names(ut))) {

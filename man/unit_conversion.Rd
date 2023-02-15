@@ -21,6 +21,6 @@ Perform unit conversion based on a data frame of data and units table
 }
 \examples{
 x <- data.frame(value = 1:3, research_name = c("a", "a", "b"))
-y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"))
+y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"), new_unit = "")
 unit_conversion(x, y)
 }
