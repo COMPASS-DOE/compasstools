@@ -21,6 +21,7 @@ read_datalogger_file <- function(filename, quiet = FALSE) {
     dat <- read_lines(filename)
     header_split <- strsplit(dat[1], ",")[[1]]
     header_split <- gsub("\"", "", header_split) # remove quotation marks
+    format_name <- header_split[1] # first field of row 1
     logger_name <- header_split[2] # second field of row 1
     table_name <- header_split[length(header_split)]
 
@@ -32,6 +33,7 @@ read_datalogger_file <- function(filename, quiet = FALSE) {
                   # don't want timestamp parsed to a datetime at this point
                   col_types = list(TIMESTAMP = col_character()))
     info <- tibble(Logger = rep(logger_name, nrow(x)),
-                   Table = rep(table_name, nrow(x)))
+                   Table = rep(table_name, nrow(x)),
+                   Format = rep(format_name, nrow(x)))
     as_tibble(cbind(info, x))
 }
