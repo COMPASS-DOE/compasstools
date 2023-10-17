@@ -4,12 +4,14 @@
 \alias{read_datalogger_file}
 \title{Read a raw Campbell datalogger data file}
 \usage{
-read_datalogger_file(filename, quiet = FALSE)
+read_datalogger_file(filename, quiet = FALSE, ...)
 }
 \arguments{
 \item{filename}{Fully-qualified filename of a raw Campbell datalogger file}
 
 \item{quiet}{Print diagnostic messages? Logical}
+
+\item{...}{Other parameters to pass on to \code{\link{read_csv}}}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.
