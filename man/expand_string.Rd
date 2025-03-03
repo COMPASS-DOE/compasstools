@@ -9,9 +9,9 @@ expand_string(s, expand_comma = TRUE, expand_colon = TRUE, quiet = TRUE)
 \arguments{
 \item{s}{String}
 
-\item{expand_comma}{Look for comma expansions ("{X,Y,...}")? Logical}
+\item{expand_comma}{Look for comma expansions ("\{X,Y,...\}")? Logical}
 
-\item{expand_colon}{Look for colon expansions ("{X:Y}")? Logical}
+\item{expand_colon}{Look for colon expansions ("\{X:Y\}")? Logical}
 
 \item{quiet}{Be quiet or print diagnostic messages? Logical}
 }
@@ -19,7 +19,7 @@ expand_string(s, expand_comma = TRUE, expand_colon = TRUE, quiet = TRUE)
 The expanded string, as a character vector
 }
 \description{
-look for patterns like "{x,y,z}" within a possibly
+look for patterns like "\{x,y,z\}" within a possibly
 }
 \examples{
 expand_string("{A,B2,C}")

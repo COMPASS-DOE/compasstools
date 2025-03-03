@@ -2,6 +2,7 @@
 
 export(expand_df)
 export(expand_string)
+export(list_directories)
 export(process_aquatroll_dir)
 export(process_sapflow_dir)
 export(process_teros_dir)

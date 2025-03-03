@@ -55,7 +55,7 @@ calculate_skip <- function(filename, header_rows, min_timestamp,
 }
 
 
-# Expand a string: look for patterns like {x,y,z} within a possibly
+# Expand a string: look for patterns like \{x,y,z\} within a possibly
 # larger string, and break them apart at the commas
 # So "Hello {A,B2,C}" -> c("Hello A", "Hello B2", "Hello C")
 # It also handles numerical sequences: "x{1:3}" -> c("x1", "x2", "x3")
@@ -65,17 +65,17 @@ calculate_skip <- function(filename, header_rows, min_timestamp,
 #' Expand a string based on comma or colon patterns
 #'
 #' @param s String
-#' @param expand_comma Look for comma expansions ("{X,Y,...}")? Logical
-#' @param expand_colon Look for colon expansions ("{X:Y}")? Logical
+#' @param expand_comma Look for comma expansions ("\{X,Y,...\}")? Logical
+#' @param expand_colon Look for colon expansions ("\{X:Y\}")? Logical
 #' @param quiet Be quiet or print diagnostic messages? Logical
 #' @export
 #' @return The expanded string, as a character vector
-#' @description look for patterns like "{x,y,z}" within a possibly
+#' @description look for patterns like "\{x,y,z\}" within a possibly
 # larger string, and break them apart at the commas
 # So "Hello {A,B2,C}" -> c("Hello A", "Hello B2", "Hello C")
-# It also handles numerical sequences: "x{1:3}" -> c("x1", "x2", "x3")
+# It also handles numerical sequences: "x\{1:3\}" -> c("x1", "x2", "x3")
 # Comma expansions are performed before colon expansions:
-# "{A,B{1:3},C}" -> c("A", "B1", "B2", "B3", "C")
+# "\{A,B\{1:3\},C\}" -> c("A", "B1", "B2", "B3", "C")
 #' @examples
 #' expand_string("{A,B2,C}")
 #' expand_string("B0{1:3}")
@@ -249,4 +249,59 @@ unit_conversion <- function(dat, ut, quiet = FALSE) {
         dat_conv[[rn]] <- d
     }
     bind_rows(dat_conv)
+}
+
+#' A recursive function to print a nicely-formatted directory tree and its files
+#'
+#' @param dir_list A list of directories
+#' @param outfile Optional file to write output to
+#' @param prefix Line prefix; used by the function as it recurses
+#' @param pattern Optional file pattern
+#' @param list_files List files in each directory? TRUE by default
+#'
+#' @return Nothing; used only for its side effects (i.e. printing).
+#' @export
+#' @examples
+#' \dontrun{
+#' list_directories(list("pipeline/Raw/", "pipeline/L0/",
+#'                       "pipeline/L1_normalize/",
+#                       "pipeline/L1/", "pipeline/L2"))
+#' }
+list_directories <- function(dir_list, outfile = "", prefix = "",
+                             pattern = NULL, list_files = TRUE) {
+
+    for(d in dir_list) {
+        # Print the directory name
+        cat(paste0(prefix, "|\n"), file = outfile, append = TRUE)
+        cat(paste0(prefix, "|- ", basename(d), "/"), "\n", file = outfile, append = TRUE)
+
+        # As we list items, print a vertical pipe except for the last
+        if(d == tail(dir_list, 1)) {
+            thisprefix <- ""
+        } else {
+            thisprefix <- "|"
+        }
+
+        # Print files in this directory; track but don't print subdirectories
+        files <- list.files(d, full.names = TRUE, pattern = pattern)
+        subdirs <- list()
+        filecount <- 0
+        for(f in files) {
+            if(dir.exists(f)) {
+                subdirs[[f]] <- f
+            } else {
+                filecount <- filecount + 1
+                if(list_files) cat(paste0(prefix, thisprefix, "\t|-"),
+                                   basename(f), "\n",
+                                   file = outfile, append = TRUE)
+            }
+        }
+        if(!list_files) cat(paste0(prefix, thisprefix, "\t|- (", filecount, " file",
+                                   ifelse(filecount == 1, "", "s"), ")\n"),
+                            file = outfile, append = TRUE)
+
+        # Now recurse for any subdirectories
+        newprefix <- paste0(prefix, "|\t")
+        list_directories(subdirs, outfile, prefix = newprefix, list_files = list_files)
+    }
 }
