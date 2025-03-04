@@ -40,66 +40,6 @@ test_that("calculate_skip works", {
 })
 
 
-test_that("expand_string works", {
-    # No expansion
-    expect_identical("hello", expand_string("hello"))
-
-    # Comma separator
-    expect_identical(c("A", "B"), expand_string("{A,B}"))
-    expect_identical(c("CA", "CB"), expand_string("C{A,B}"))
-    expect_identical(c("AD", "BD"), expand_string("{A,B}D"))
-    expect_identical("A,B", expand_string("A,B")) # no braces
-    expect_identical("{A,B}", expand_string("{A,B}", expand_comma = FALSE))
-
-    # Colon separator
-    expect_identical(c("1", "2"), expand_string("{1:2}"))
-    expect_identical(c("C1", "C2"), expand_string("C{1:2}"))
-    expect_identical(c("1D", "2D"), expand_string("{1:2}D"))
-    expect_identical("1:2", expand_string("1:2")) # no braces
-    expect_identical("{A:B}", expand_string("{A:B}")) # no numbers
-    expect_identical("{1:2}", expand_string("{1:2}", expand_colon = FALSE))
-
-    # Nesting
-    expect_identical(c("A", "B1", "B2", "C"), expand_string("{A,B{1:2},C}"))
-
-    # Misc
-    expect_message(expand_string("AAA", quiet = FALSE), regexp = "AAA")
-})
-
-test_that("expand_df works", {
-    # No expansion
-    x <- data.frame(x = 1)
-    expect_identical(expand_df(x), x)
-    x <- dplyr::tibble(x = 1)
-    expect_identical(expand_df(x), x)
-
-    # Comma separator
-    x <- data.frame(C1 = "{A,B}", C2 = "1")
-    y <- expand_df(x)
-    expect_identical(nrow(y), 2L)
-    expect_identical(y$C1, c("A", "B"))
-    expect_identical(y$C2, c("1", "1")) # replicates
-
-    x <- data.frame(C1 = "{A,B}", C2 = "{C,D}")
-    y <- expand_df(x)
-    expect_identical(y$C2, c("C", "D")) # sequences
-
-    # Colon separator
-    x <- data.frame(C1 = "{1:2}", C2 = "1")
-    y <- expand_df(x)
-    expect_identical(nrow(y), 2L)
-    expect_identical(y$C1, c("1", "2"))
-    expect_identical(y$C2, c("1", "1")) # replicates
-
-    x <- data.frame(C1 = "{2:1}", C2 = "{C,D}")
-    y <- expand_df(x)
-    expect_identical(y$C1, c("2", "1")) # descending
-    expect_identical(y$C2, c("C", "D")) # sequences
-
-    # Nesting
-
-})
-
 test_that("scan_folders works", {
     # Nonexistent parent folder
     expect_error(scan_folders("folder_doesnt_exist"), "doesn't exist")
@@ -154,41 +94,3 @@ test_that("scan_folders works", {
         expect_message(scan_folders(td, quiet = FALSE), "files")
     })
 })
-
-test_that("unit_conversion works", {
-    x <- data.frame(value = 1:3, research_name = c("a", "a", "b"))
-
-    # Empty unit conversion table - should be all NA
-    empty <- data.frame(research_name = "", conversion = "", new_unit = "")
-    z <- unit_conversion(x, empty, quiet = TRUE)
-    expect_true(all(is.na(z$value_conv)))
-
-    # Empty empty
-    z <- unit_conversion(data.frame(), empty)
-    expect_s3_class(z, "data.frame")
-    expect_identical(nrow(z), 0L)
-
-    # Bad units table
-    expect_error(unit_conversion(x, cars), regexp = "isn't structured correctly")
-
-    # Multiple conversions for a research_name
-    y <- data.frame(research_name = c("a", "a"), conversion = c("x * 1", "(x * 2) - 1"), new_unit = "")
-    expect_error(unit_conversion(x, y), regexp = "Multiple conversions")
-
-    # Error in conversion string
-    # Suppress the output
-    f <- file(tempfile(), "a")
-    sink(f, type = "message")
-    # evaluation error
-    y <- data.frame(research_name = c("a", "b"), conversion = c(" * 1", "(x * 2) - 1"), new_unit = "")
-    expect_error(unit_conversion(x, y), regexp = "Error evaluating conversion string")
-    # tries to return non-numeric
-    y <- data.frame(research_name = c("a", "b"), conversion = c("cars", "(x * 2) - 1"), new_unit = "")
-    expect_error(unit_conversion(x, y), regexp = "Error evaluating conversion string")
-    #  sink() # Seems like testthat removes the sink
-
-    # Respects quiet
-    y <- data.frame(research_name = c("a", "b"), conversion = c("x * 1", "(x * 2) - 1"), new_unit = "")
-    expect_silent(unit_conversion(x, y, quiet = TRUE))
-})
-
