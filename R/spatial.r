@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' nearest_neighbor_TMP("C2")
-#' nearest_neighbor_TMP("A1") # returns four squares (other are out)
+#' nearest_neighbor_TMP("A1") # returns four squares (others are out)
 #' nearest_neighbor_TMP("F3", radius = 0) # returns F3
 #' nearest_neighbor_TMP("F3", radius = 1) # returns the nine squares around F3
 #'
