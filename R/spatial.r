@@ -23,6 +23,7 @@ nearest_neighbor_TMP <- function(location, radius = 1) {
 
     # Sanity checking
     stopifnot(length(location) == 1)
+    stopifnot(radius >= 0)
     if(!grepl("^[A-J][1-8]$", location)) {
         stop(location, " does not appear to be a TEMPEST grid cell")
     }
