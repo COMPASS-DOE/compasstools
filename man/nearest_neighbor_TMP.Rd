@@ -19,13 +19,13 @@ Find the nearest-neighbor grid squares - TEMPEST
 }
 \examples{
 nearest_neighbor_TMP("C2")
-nearest_neighbor_TMP("A1") # returns four squares (other are out)
+nearest_neighbor_TMP("A1") # returns four squares (others are out)
 nearest_neighbor_TMP("F3", radius = 0) # returns F3
 nearest_neighbor_TMP("F3", radius = 1) # returns the nine squares around F3
 
 # Construct a data frame of neighboring grid squares for a vector of locations
 locations <- c("C2", "F3")
-grid_map <- lapply(locations, function(x) data.frame(neighbor = nearest_neighbor_TMP(x)))
-names(grid_map) <- locations
-dplyr::bind_rows(grid_map, .id = "location")
+grid_map <- lapply(locations, function(x)
+    data.frame(location = x, neighbor = nearest_neighbor_TMP(x)))
+dplyr::bind_rows(grid_map)
 }

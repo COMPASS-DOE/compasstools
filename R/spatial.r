@@ -16,9 +16,9 @@
 #'
 #' # Construct a data frame of neighboring grid squares for a vector of locations
 #' locations <- c("C2", "F3")
-#' grid_map <- lapply(locations, function(x) data.frame(neighbor = nearest_neighbor_TMP(x)))
-#' names(grid_map) <- locations
-#' dplyr::bind_rows(grid_map, .id = "location")
+#' grid_map <- lapply(locations, function(x)
+#'     data.frame(location = x, neighbor = nearest_neighbor_TMP(x)))
+#' dplyr::bind_rows(grid_map)
 nearest_neighbor_TMP <- function(location, radius = 1) {
 
     # Sanity checking
