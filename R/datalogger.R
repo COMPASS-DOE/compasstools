@@ -4,10 +4,10 @@
 #'
 #' @param filename Fully-qualified filename of a raw Campbell datalogger file
 #' @param quiet Print diagnostic messages? Logical
-#' @param ... Other parameters to pass on to \code{\link{read_csv}}
+#' @param ... Other parameters to pass on to \code{read_csv}
 #' @description This function reads a local file of raw sapflow data,
 #' extracts the logger number from the header, and uses
-#' \code{\link[readr]{read_csv}} to parse the file into a data frame.
+#' \code{read_csv} to parse the file into a data frame.
 #' @author Stephanie Pennington and Ben Bond-Lamberty
 #' @return A \code{\link[tibble]{tibble}} with the data.
 #' @export

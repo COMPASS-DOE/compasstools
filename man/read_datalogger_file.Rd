@@ -11,7 +11,7 @@ read_datalogger_file(filename, quiet = FALSE, ...)
 
 \item{quiet}{Print diagnostic messages? Logical}
 
-\item{...}{Other parameters to pass on to \code{\link{read_csv}}}
+\item{...}{Other parameters to pass on to \code{read_csv}}
 }
 \value{
 A \code{\link[tibble]{tibble}} with the data.
@@ -19,7 +19,7 @@ A \code{\link[tibble]{tibble}} with the data.
 \description{
 This function reads a local file of raw sapflow data,
 extracts the logger number from the header, and uses
-\code{\link[readr]{read_csv}} to parse the file into a data frame.
+\code{read_csv} to parse the file into a data frame.
 }
 \examples{
 fn <- system.file("PNNL_11_sapflow_1min.dat", package = "compasstools")
