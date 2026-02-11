@@ -1,6 +1,6 @@
 Package: compasstools
 Title: COMPASS Utilities and Tools
-Version: 0.2
+Version: 2.1
 Authors@R: c(
     person("Ben", "Bond-Lamberty", email = "bondlamberty@pnnl.gov",
         role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9525-4633")),
@@ -19,7 +19,8 @@ Imports:
     fpeek,
     lubridate,
     tidyr (>= 1.0),
-    dplyr (>= 1.0)
+    dplyr (>= 1.0),
+    arrow (>= 20.0)
 Suggests: 
     rdrop2 (>= 0.8),
     covr,
