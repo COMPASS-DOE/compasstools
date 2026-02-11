@@ -1,0 +1,106 @@
+# data.R
+
+# These two functions share 95% of their code, but they're short
+
+
+#' Read L1 (Level 1) sensor data files
+#'
+#' This function reads the COMPASS-FME L1 data files (CSV format)
+#' for a single variable, from one or more sites, and returns
+#' the compiled data.
+#'
+#' @param variable Variable name ('research name') to be read, character
+#' @param site Optional name of the site(s) of data to read, character
+#' @param path Optional path of the L1 dataset, character
+#' @param quiet Print diagnostic information? Logical
+#' @importFrom dplyr bind_rows
+#' @importFrom readr read_csv
+#' @returns A \code{\link[tibble]{tibble}} of L1 data.
+#' @export
+#' @author BBL
+#' @note This function only works for L1 v2-0 (July 2025) and higher.
+#' @examples
+#' \dontrun{
+#' read_L1("gw-tds", site = "TMP")
+#' read_L1("gw-tds", c("TMP", "OWC")) # multiple sites
+#' read_L1(variable = "gw-tds") # will read all sites' data
+#' read_L1(variable = "gw-tds", path = "/path/to/L1/data")
+#' }
+read_L1 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
+
+    if(length(variable) > 1) {
+        stop("Only one variable can be read at a time")
+    }
+    if(is.null(site)) {
+        sites <- "[A-Z]*"
+    } else {
+        sites <- paste0("(", paste(site, collapse = "|"), ")")
+    }
+    # Construct regular expression to identify files
+    regex <- paste0("^", sites, "_[A-Z]+_.*_", variable, "_L1_.*csv$")
+    if(!quiet) message(regex)
+    files <- list.files(path, pattern = regex, recursive = TRUE)
+    if(!quiet) message("Reading ", length(files), " files")
+
+    # The function works fine reading zero files, but this is
+    # probably not what the user wants
+    stopifnot(length(files) > 0)
+
+    x <- lapply(files, function(f) {
+        if(!quiet) message("\t", f)
+        read_csv(file.path(path, f), col_types = "ccTccccdcclll")
+    })
+    bind_rows(x)
+}
+
+
+
+#' Read L2 (Level 2) sensor data files (Parquet format)
+#'
+#' This function reads the COMPASS-FME L2 data files (Parquet format)
+#' for a single variable, from one or more sites, and returns
+#' the compiled data.
+#'
+#' @param variable Variable name ('research name') to be read, character
+#' @param site Optional name of the site(s) of data to read, character
+#' @param path Optional path of the L2 dataset, character
+#' @param quiet Print diagnostic information? Logical
+#' @importFrom dplyr bind_rows
+#' @importFrom arrow read_parquet
+#' @returns A \code{\link[tibble]{tibble}} of L2 data.
+#' @export
+#' @author BBL
+#' @note This function only works for L2 v2-0 (July 2025) and higher.
+#' @examples
+#' \dontrun{
+#' read_L2("gw-tds", site = "TMP")
+#' read_L2("gw-tds", c("TMP", "OWC")) # multiple sites
+#' read_L2(variable = "gw-tds") # will read all sites' data
+#' read_L2(variable = "gw-tds", path = "/path/to/L2/data")
+#' }
+read_L2 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
+
+    if(length(variable) > 1) {
+        stop("Only one variable can be read at a time")
+    }
+    if(is.null(site)) {
+        sites <- "[A-Z]*"
+    } else {
+        sites <- paste0("(", paste(site, collapse = "|"), ")")
+    }
+    # Construct regular expression to identify files
+    regex <- paste0("^", sites, "_[A-Z]+_.*_", variable, "_L2_.*parquet$")
+    if(!quiet) message(regex)
+    files <- list.files(path, pattern = regex, recursive = TRUE)
+    if(!quiet) message("Reading ", length(files), " files")
+
+    # The function works fine reading zero files, but this is
+    # probably not what the user wants
+    stopifnot(length(files) > 0)
+
+    x <- lapply(files, function(f) {
+        if(!quiet) message("\t", f)
+        read_parquet(file.path(path, f))
+    })
+    bind_rows(x)
+}

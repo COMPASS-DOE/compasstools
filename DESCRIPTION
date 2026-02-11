@@ -19,7 +19,8 @@ Imports:
     fpeek,
     lubridate,
     tidyr (>= 1.0),
-    dplyr (>= 1.0)
+    dplyr (>= 1.0),
+    arrow (>= 20.0)
 Suggests: 
     rdrop2 (>= 0.8),
     covr,
