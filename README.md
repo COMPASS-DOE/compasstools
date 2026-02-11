@@ -5,7 +5,7 @@
 
 # compasstools
 
-COMPASS utilities and tools
+COMPASS utilities and tools, intended as a handy resource for working with project data.
 
 ```
 devtools::install_github("COMPASS-DOE/compasstools")
