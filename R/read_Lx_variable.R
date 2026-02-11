@@ -1,4 +1,4 @@
-# data.R
+# read_Lx_variable.R
 
 # These two functions share 95% of their code, but they're short
 
@@ -21,12 +21,12 @@
 #' @note This function only works for L1 v2-0 (July 2025) and higher.
 #' @examples
 #' \dontrun{
-#' read_L1("gw-tds", site = "TMP")
-#' read_L1("gw-tds", c("TMP", "OWC")) # multiple sites
-#' read_L1(variable = "gw-tds") # will read all sites' data
-#' read_L1(variable = "gw-tds", path = "/path/to/L1/data")
+#' read_L1_variable("gw-tds", site = "TMP")
+#' read_L1_variable("gw-tds", c("TMP", "OWC")) # multiple sites
+#' read_L1_variable(variable = "gw-tds") # will read all sites' data
+#' read_L1_variable(variable = "gw-tds", path = "/path/to/L1/data")
 #' }
-read_L1 <- function(variable, path, site = NULL, quiet = FALSE) {
+read_L1_variable <- function(variable, path, site = NULL, quiet = FALSE) {
 
     if(length(variable) > 1) {
         stop("Only one variable can be read at a time")
@@ -73,12 +73,12 @@ read_L1 <- function(variable, path, site = NULL, quiet = FALSE) {
 #' @note This function only works for L2 v2-0 (July 2025) and higher.
 #' @examples
 #' \dontrun{
-#' read_L2("gw-tds", site = "TMP")
-#' read_L2("gw-tds", c("TMP", "OWC")) # multiple sites
-#' read_L2(variable = "gw-tds") # will read all sites' data
-#' read_L2(variable = "gw-tds", path = "/path/to/L2/data")
+#' read_L2_variable("gw-tds", site = "TMP")
+#' read_L2_variable("gw-tds", c("TMP", "OWC")) # multiple sites
+#' read_L2_variable(variable = "gw-tds") # will read all sites' data
+#' read_L2_variable(variable = "gw-tds", path = "/path/to/L2/data")
 #' }
-read_L2 <- function(variable, path, site = NULL, quiet = FALSE) {
+read_L2_variable <- function(variable, path, site = NULL, quiet = FALSE) {
 
     if(length(variable) > 1) {
         stop("Only one variable can be read at a time")
