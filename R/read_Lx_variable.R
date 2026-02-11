@@ -37,7 +37,7 @@ read_L1_variable <- function(variable, path, site = NULL, quiet = FALSE) {
         sites <- paste0("(", paste(site, collapse = "|"), ")")
     }
     # Construct regular expression to identify files
-    regex <- paste0("^", sites, "_[A-Z]+_.*_", variable, "_L1_.*csv$")
+    regex <- paste0("^", sites, "_[A-Z0-9]+_.*_", variable, "_L1_.*csv$")
     if(!quiet) message(regex)
     files <- list.files(path, pattern = regex, recursive = TRUE)
     if(!quiet) message("Reading ", length(files), " files")
@@ -89,7 +89,7 @@ read_L2_variable <- function(variable, path, site = NULL, quiet = FALSE) {
         sites <- paste0("(", paste(site, collapse = "|"), ")")
     }
     # Construct regular expression to identify files
-    regex <- paste0("^", sites, "_[A-Z]+_.*_", variable, "_L2_.*parquet$")
+    regex <- paste0("^", sites, "_[A-Z0-9]+_.*_", variable, "_L2_.*parquet$")
     if(!quiet) message(regex)
     files <- list.files(path, pattern = regex, recursive = TRUE)
     if(!quiet) message("Reading ", length(files), " files")
