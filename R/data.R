@@ -44,7 +44,7 @@ read_L1 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
 
     # The function works fine reading zero files, but this is
     # probably not what the user wants
-    stopifnot(length(files) > 0)
+    if(length(files) == 0) warning("No files found")
 
     x <- lapply(files, function(f) {
         if(!quiet) message("\t", f)
@@ -96,7 +96,7 @@ read_L2 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
 
     # The function works fine reading zero files, but this is
     # probably not what the user wants
-    stopifnot(length(files) > 0)
+    if(length(files) == 0) warning("No files found")
 
     x <- lapply(files, function(f) {
         if(!quiet) message("\t", f)
