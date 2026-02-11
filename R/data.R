@@ -10,8 +10,8 @@
 #' the compiled data.
 #'
 #' @param variable Variable name ('research name') to be read, character
+#' @param path Path of the L1 dataset, character
 #' @param site Optional name of the site(s) of data to read, character
-#' @param path Optional path of the L1 dataset, character
 #' @param quiet Print diagnostic information? Logical
 #' @importFrom dplyr bind_rows
 #' @importFrom readr read_csv
@@ -26,7 +26,7 @@
 #' read_L1(variable = "gw-tds") # will read all sites' data
 #' read_L1(variable = "gw-tds", path = "/path/to/L1/data")
 #' }
-read_L1 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
+read_L1 <- function(variable, path, site = NULL, quiet = FALSE) {
 
     if(length(variable) > 1) {
         stop("Only one variable can be read at a time")
@@ -62,8 +62,8 @@ read_L1 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
 #' the compiled data.
 #'
 #' @param variable Variable name ('research name') to be read, character
+#' @param path Path of the L2 dataset, character
 #' @param site Optional name of the site(s) of data to read, character
-#' @param path Optional path of the L2 dataset, character
 #' @param quiet Print diagnostic information? Logical
 #' @importFrom dplyr bind_rows
 #' @importFrom arrow read_parquet
@@ -78,7 +78,7 @@ read_L1 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
 #' read_L2(variable = "gw-tds") # will read all sites' data
 #' read_L2(variable = "gw-tds", path = "/path/to/L2/data")
 #' }
-read_L2 <- function(variable, site = NULL, path = ".", quiet = FALSE) {
+read_L2 <- function(variable, path, site = NULL, quiet = FALSE) {
 
     if(length(variable) > 1) {
         stop("Only one variable can be read at a time")

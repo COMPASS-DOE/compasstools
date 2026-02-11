@@ -4,14 +4,14 @@
 \alias{read_L1}
 \title{Read L1 (Level 1) sensor data files}
 \usage{
-read_L1(variable, site = NULL, path = ".", quiet = FALSE)
+read_L1(variable, path, site = NULL, quiet = FALSE)
 }
 \arguments{
 \item{variable}{Variable name ('research name') to be read, character}
 
-\item{site}{Optional name of the site(s) of data to read, character}
+\item{path}{Path of the L1 dataset, character}
 
-\item{path}{Optional path of the L1 dataset, character}
+\item{site}{Optional name of the site(s) of data to read, character}
 
 \item{quiet}{Print diagnostic information? Logical}
 }

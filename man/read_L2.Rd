@@ -4,14 +4,14 @@
 \alias{read_L2}
 \title{Read L2 (Level 2) sensor data files (Parquet format)}
 \usage{
-read_L2(variable, site = NULL, path = ".", quiet = FALSE)
+read_L2(variable, path, site = NULL, quiet = FALSE)
 }
 \arguments{
 \item{variable}{Variable name ('research name') to be read, character}
 
-\item{site}{Optional name of the site(s) of data to read, character}
+\item{path}{Path of the L2 dataset, character}
 
-\item{path}{Optional path of the L2 dataset, character}
+\item{site}{Optional name of the site(s) of data to read, character}
 
 \item{quiet}{Print diagnostic information? Logical}
 }
