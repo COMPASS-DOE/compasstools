@@ -104,3 +104,25 @@ read_L2_variable <- function(variable, path, site = NULL, quiet = FALSE) {
     })
     bind_rows(x)
 }
+
+#' Search the list of COMPASS-FME sensor variables
+#'
+#' @param term Search term, case insensitive (character)
+#'
+#' @returns Variables whose descriptions match the search term.
+#' @export
+#' @note The search is case-sensitive but definitely not 'smart';
+#' use single words only!
+#' @examples
+#' search_Lx_variables("redox")
+#' search_Lx_variables("this will not find any matches")
+search_Lx_variables <- function(term) {
+    hits <- grep(tolower(term),
+                 tolower(compasstools::Lx_variables$description),
+                 fixed = TRUE)
+    if(length(hits) > 0) {
+        compasstools::Lx_variables[hits,]
+    } else {
+        message("No matches found")
+    }
+}
