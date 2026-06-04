@@ -59,8 +59,8 @@ process_dir <- function(datadir, pattern, read_function,
         # want to put it in DESCRIPTION's Imports:), so check for availability
         if(requireNamespace("rdrop2", quietly = TRUE)) {
             # Generate list of 'current' (based on token) files
-            #s_dir <- rdrop2::drop_dir(datadir, dtoken = dropbox_token)
-            #s_files <- grep(s_dir$path_display, pattern = pattern, value = TRUE)
+            s_dir <- refreshtokenrdrop2::drop_dir(datadir, dtoken = dropbox_token)
+            s_files <- grep(s_dir$path_display, pattern = pattern, value = TRUE)
         } else {
             stop("rdrop2 package is not available")
         }

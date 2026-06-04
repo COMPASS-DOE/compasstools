@@ -22,7 +22,11 @@ Imports:
     arrow (>= 19.0)
 Suggests: 
     rdrop2 (>= 0.8),
+    refreshtokenrdrop2,
     covr,
     testthat (>= 3.0.0)
+Remotes:
+    COMPASS-DOE/refreshtokenrdrop2
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3
