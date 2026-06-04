@@ -12,7 +12,6 @@ URL: https://compass.pnnl.gov
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Depends: R (>= 3.4.0)
 Imports:
     readr,
@@ -20,9 +19,10 @@ Imports:
     lubridate,
     tidyr (>= 1.0),
     dplyr (>= 1.0),
-    arrow (>= 20.0)
+    arrow (>= 19.0)
 Suggests: 
     rdrop2 (>= 0.8),
     covr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
