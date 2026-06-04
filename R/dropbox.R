@@ -57,7 +57,7 @@ process_dir <- function(datadir, pattern, read_function,
     } else {
         # We don't want users to need rdrop2 to use this package (i.e. we don't
         # want to put it in DESCRIPTION's Imports:), so check for availability
-        if(requireNamespace("rdrop2", quietly = TRUE)) {
+        if(requireNamespace("rdrop2refreshtoken", quietly = TRUE)) {
             # Generate list of 'current' (based on token) files
             s_dir <- rdrop2refreshtoken::drop_dir(datadir, dtoken = dropbox_token)
             s_files <- grep(s_dir$path_display, pattern = pattern, value = TRUE)
