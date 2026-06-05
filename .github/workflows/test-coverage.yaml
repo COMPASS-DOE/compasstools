@@ -23,7 +23,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: covr, rdrop2=?ignore
+          extra-packages: covr, rdrop2refreshtoken=?ignore
 
       - name: Test coverage
         run: covr::codecov()

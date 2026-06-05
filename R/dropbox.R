@@ -11,16 +11,17 @@
 #' @export
 #' @author Ben Bond-Lamberty
 read_file_dropbox <- function(filename, token, read_function, ...) {
-    # We don't want users to need rdrop2 to use this package (i.e. we don't
-    # want to put it in DESCRIPTION's Imports:), so check for availability
-    if(requireNamespace("rdrop2", quietly = TRUE)) {
+    # We don't want users to need rdrop2refreshtoken to use this package
+    # (i.e. we don't want to put it in DESCRIPTION's Imports:),
+    # so check for availability
+    if(requireNamespace("rdrop2refreshtoken", quietly = TRUE)) {
         # download to temp file
         tf <- tempfile()
-        rdrop2::drop_download(filename, local_path = tf,
+        rdrop2refreshtoken::drop_download(filename, local_path = tf,
                               dtoken = token, overwrite = TRUE)
         read_function(tf, ...)
     } else {
-        stop("rdrop2 package is not available")
+        stop("rdrop2refreshtoken package is not available")
     }
 }
 
@@ -55,14 +56,15 @@ process_dir <- function(datadir, pattern, read_function,
     if(local) {
         s_files <- list.files(datadir, pattern = pattern, full.names = TRUE)
     } else {
-        # We don't want users to need rdrop2 to use this package (i.e. we don't
-        # want to put it in DESCRIPTION's Imports:), so check for availability
+        # We don't want users to need rdrop2refreshtoken to use this package
+        # (i.e. we don't want to put it in DESCRIPTION's Imports:),
+        # so check for availability
         if(requireNamespace("rdrop2refreshtoken", quietly = TRUE)) {
             # Generate list of 'current' (based on token) files
             s_dir <- rdrop2refreshtoken::drop_dir(datadir, dtoken = dropbox_token)
             s_files <- grep(s_dir$path_display, pattern = pattern, value = TRUE)
         } else {
-            stop("rdrop2 package is not available")
+            stop("rdrop2refreshtoken package is not available")
         }
     }
 
