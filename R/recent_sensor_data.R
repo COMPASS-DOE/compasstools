@@ -9,7 +9,7 @@
 #' @returns Either a table of available data, if no parameters are specified;
 #' or the requested dataset based on \code{site} and \code{sensor}.
 #' @export
-#' @note This function is intended for QA/QC and 'quick look' calculations,
+#' @note This is intended for QA/QC and 'quick look' calculations,
 #' not full analyses. The returned data have some metadata attached (e.g.,
 #' \code{Instrument_ID}, \code{research_name}) but are not identical to
 #' what is produced by the sensor data pipeline. In particular, no flagging,
